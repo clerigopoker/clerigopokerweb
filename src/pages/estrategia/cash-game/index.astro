@@ -1,11 +1,16 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Breadcrumb from '@/components/Breadcrumb.astro';
+import ArticleCard from '@/components/ArticleCard.astro';
+
+const allPosts = await getCollection('estrategia', ({ data }) => !data.draft && data.category === 'cash-game');
+const posts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
 <BaseLayout
   title="Estrategia Cash Game"
-  description="Guías de estrategia de cash game: stacks profundos, explotación, thin value bets y el templo del jugador paciente y calculador."
+  description="Guías de estrategia para cash game: stacks profundos, decisiones profundas. El templo del jugador paciente y calculador."
 >
   <section class="mx-auto max-w-4xl px-4 py-10 sm:px-6">
     <Breadcrumb items={[
@@ -17,12 +22,28 @@ import Breadcrumb from '@/components/Breadcrumb.astro';
         ♠ Estrategia <span class="text-sacred">Cash Game</span>
       </h1>
       <p class="mt-4 max-w-2xl text-lg text-psalm">
-        Stacks profundos, decisiones profundas. El templo del jugador paciente y calculador.
-        Aquí no hay burbuja ni ICM: solo tú, tu stack y la verdad desnuda de cada spot.
+        Stacks profundos, decisiones profundas. El templo del jugador paciente y calculador
+        que no necesita la adrenalina de un torneo para sentir el poder del green felt.
       </p>
     </header>
-    <div class="card-altar text-center py-12">
-      <p class="text-psalm text-lg">🕯️ Los primeros sermones de cash están en camino...</p>
-    </div>
+    {posts.length > 0 ? (
+      <div class="grid gap-6 sm:grid-cols-2">
+        {posts.map((post) => (
+          <ArticleCard
+            title={post.data.title}
+            description={post.data.description}
+            href={`/estrategia/${post.id}`}
+            pubDate={post.data.pubDate}
+            tags={post.data.tags}
+            difficulty={post.data.difficulty}
+            image={post.data.image}
+          />
+        ))}
+      </div>
+    ) : (
+      <div class="card-altar text-center py-12">
+        <p class="text-psalm text-lg">🕯️ Los primeros sermones de cash game están en camino...</p>
+      </div>
+    )}
   </section>
 </BaseLayout>

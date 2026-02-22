@@ -1,11 +1,16 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Breadcrumb from '@/components/Breadcrumb.astro';
+import ArticleCard from '@/components/ArticleCard.astro';
+
+const allPosts = await getCollection('psicologia', ({ data }) => !data.draft && data.category === 'mindset');
+const posts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
 <BaseLayout
-  title="Mindset del Jugador de Póker"
-  description="Mentalidad ganadora en el póker: disciplina, enfoque, A-game y la capacidad de mantenerte firme cuando el variance golpea con fuerza."
+  title="Mindset del Póker"
+  description="Guías de mindset para póker: mentalidad ganadora, disciplina, rutinas de estudio y cómo pensar como un profesional del green felt."
 >
   <section class="mx-auto max-w-4xl px-4 py-10 sm:px-6">
     <Breadcrumb items={[
@@ -14,15 +19,31 @@ import Breadcrumb from '@/components/Breadcrumb.astro';
     ]} />
     <header class="mb-12">
       <h1 class="font-display text-4xl font-bold text-scripture sm:text-5xl">
-        🧘 <span class="text-incense-light">Mindset</span>
+        🧠 <span class="text-sacred">Mindset</span>
       </h1>
       <p class="mt-4 max-w-2xl text-lg text-psalm">
-        La mentalidad del ganador no es un don: es una disciplina.
-        Enfoque, resiliencia y la capacidad de jugar tu mejor juego incluso cuando todo arde.
+        La mentalidad lo es todo. Puedes tener la mejor técnica del mundo, pero si tu cabeza
+        no está en el lugar correcto, las fichas terminarán en el lugar equivocado.
       </p>
     </header>
-    <div class="card-altar text-center py-12">
-      <p class="text-psalm text-lg">🕯️ Las meditaciones están en preparación...</p>
-    </div>
+    {posts.length > 0 ? (
+      <div class="grid gap-6 sm:grid-cols-2">
+        {posts.map((post) => (
+          <ArticleCard
+            title={post.data.title}
+            description={post.data.description}
+            href={`/psicologia/${post.id}`}
+            pubDate={post.data.pubDate}
+            tags={post.data.tags}
+            difficulty={post.data.difficulty}
+            image={post.data.image}
+          />
+        ))}
+      </div>
+    ) : (
+      <div class="card-altar text-center py-12">
+        <p class="text-psalm text-lg">🕯️ Los primeros sermones de mindset están en camino...</p>
+      </div>
+    )}
   </section>
 </BaseLayout>

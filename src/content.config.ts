@@ -78,14 +78,10 @@ const noticias = defineCollection({
 // ============================================
 const conceptos = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/conceptos' }),
-  schema: z.object({
-    title: z.string(),
-    description: z.string().max(160),
-    term: z.string(), // El término del glosario
+  schema: articleSchema.extend({
+    term: z.string().optional(), // El término del glosario
     relatedTerms: z.array(z.string()).default([]),
-    pubDate: z.coerce.date(),
-    updatedDate: z.coerce.date().optional(),
-    draft: z.boolean().default(false),
+    category: z.string().optional(),
   }),
 });
 
