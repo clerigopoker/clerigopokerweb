@@ -23,20 +23,21 @@ import Breadcrumb from '@/components/Breadcrumb.astro';
 
     <div class="grid gap-6 sm:grid-cols-2">
       <!-- Push or Fold Calculator -->
-      <a href="/herramientas/calculadora-push-or-fold" class="card-altar group transition-all hover:border-gold/40 hover:-translate-y-1">
-        <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-lg text-lg" style="background: linear-gradient(135deg, rgba(212,168,71,0.12), rgba(212,168,71,0.04)); border: 1px solid rgba(212,168,71,0.15);">
-          🎯
+      <a href="/herramientas/calculadora-push-or-fold" class="card-altar group transition-all hover:border-gold/40 hover:-translate-y-1 overflow-hidden p-0">
+        <img src="/images/herramientas/oraculo-push-or-fold.avif" alt="El Oráculo Push or Fold — calculadora de Nash Equilibrium" class="w-full h-40 object-cover" loading="lazy" />
+        <div class="p-5">
+          <h2 class="font-display text-xl font-bold text-scripture group-hover:text-sacred">
+            El Oráculo Push or Fold
+          </h2>
+          <p class="mt-2 text-sm text-psalm">
+            Nash Equilibrium · Chip EV · Torneos SNG / MTT. Selecciona tu posición, stack
+            y lo que pasó antes de ti, y el Oráculo ilumina la matriz de 169 manos:
+            las que debes empujar brillan, las que debes foldear se quedan en la oscuridad.
+          </p>
+          <span class="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-gold transition-all group-hover:gap-2.5">
+            Usar herramienta <span aria-hidden="true">→</span>
+          </span>
         </div>
-        <h2 class="font-display text-xl font-bold text-scripture group-hover:text-sacred">
-          Calculadora Push or Fold
-        </h2>
-        <p class="mt-2 text-sm text-psalm">
-          Nash Equilibrium · Chip EV · Torneos SNG / MTT. Introduce tu stack, posición
-          y mano, y la parroquia te dirá si es momento de ir all-in o rezar en silencio.
-        </p>
-        <span class="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-gold transition-all group-hover:gap-2.5">
-          Usar herramienta <span aria-hidden="true">→</span>
-        </span>
       </a>
 
       <!-- Placeholder for future tools -->
