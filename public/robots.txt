@@ -6,7 +6,9 @@
 User-agent: *
 Allow: /
 Disallow: /404
-Disallow: /_astro/
+Disallow: /politica-de-privacidad
+Disallow: /politica-de-cookies
+Disallow: /terminos-y-condiciones
 
 # Sitemap
 Sitemap: https://clerigopoker.com/sitemap-index.xml
