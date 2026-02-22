@@ -60,13 +60,19 @@ const currentYear = new Date().getFullYear();
     <div class="my-10 h-px" style="background: linear-gradient(90deg, transparent, var(--color-chalice) 50%, transparent);"></div>
 
     <!-- Bottom bar -->
-    <div class="flex flex-col items-center justify-between gap-3 sm:flex-row">
+    <div class="flex flex-col items-center justify-between gap-4 sm:flex-row">
       <p class="text-xs text-whisper/50">
         &copy; {currentYear} Clérigo Poker · Todos los pecados reservados
       </p>
-      <p class="text-xs text-whisper/40">
-        +18 · Juega con responsabilidad
-      </p>
+      <div class="flex flex-wrap items-center justify-center gap-3 text-xs text-whisper/40">
+        <a href="/politica-de-privacidad" class="transition-colors hover:text-psalm">Privacidad</a>
+        <span>·</span>
+        <a href="/politica-de-cookies" class="transition-colors hover:text-psalm">Cookies</a>
+        <span>·</span>
+        <a href="/terminos-y-condiciones" class="transition-colors hover:text-psalm">Términos</a>
+        <span>·</span>
+        <span>+18 · Juega con responsabilidad</span>
+      </div>
     </div>
   </div>
 </footer>

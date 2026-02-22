@@ -1,0 +1,119 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+---
+
+<BaseLayout
+  title="Política de Privacidad"
+  description="Política de privacidad de Clérigo Poker. Cómo recopilamos, usamos y protegemos tus datos personales."
+  hideCTA={true}
+>
+  <article class="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+    <Breadcrumb items={[{ name: 'Política de Privacidad', url: '/politica-de-privacidad' }]} />
+
+    <header class="mb-10">
+      <h1 class="font-display text-3xl font-bold text-scripture sm:text-4xl">
+        Política de Privacidad
+      </h1>
+      <p class="mt-3 text-sm text-whisper">Última actualización: 22 de febrero de 2026</p>
+    </header>
+
+    <div class="prose-clerigo">
+      <p>
+        En <strong>Clérigo Poker</strong> (clerigopoker.com) nos tomamos tu privacidad en serio.
+        Sí, somos un sitio sobre póker con humor irreverente, pero cuando se trata de tus datos,
+        somos más estrictos que un párroco en Cuaresma. Esta política explica qué datos recopilamos,
+        por qué y qué hacemos con ellos.
+      </p>
+
+      <h2>1. Responsable del tratamiento</h2>
+      <p>
+        El responsable de este sitio web es el equipo de Clérigo Poker.
+        Puedes contactarnos en: <strong>contacto@clerigopoker.com</strong>.
+      </p>
+
+      <h2>2. Datos que recopilamos</h2>
+
+      <h3>2.1. Datos de navegación (Google Analytics 4)</h3>
+      <p>
+        Si aceptas las cookies analíticas, utilizamos Google Analytics 4 (a través de Google Tag Manager)
+        para entender cómo se usa el sitio. Esto incluye datos anonimizados como: páginas visitadas,
+        tiempo de permanencia, tipo de dispositivo, país de origen y fuente de tráfico.
+        Google Analytics utiliza cookies. Puedes revocar tu consentimiento en cualquier momento
+        borrando las cookies de tu navegador.
+      </p>
+      <p>
+        <strong>No recopilamos tu nombre, email ni datos personales identificables a través de la analítica.</strong>
+      </p>
+
+      <h3>2.2. Cookies esenciales</h3>
+      <p>
+        Almacenamos tu preferencia de cookies (<code>cp_cookie_consent</code>) en el almacenamiento local
+        de tu navegador. Esto no se envía a ningún servidor.
+      </p>
+
+      <h3>2.3. Enlaces de afiliado</h3>
+      <p>
+        Este sitio contiene enlaces de afiliado a WPT Global (wptpartners.com).
+        Cuando haces clic en estos enlaces, el servicio de tracking del afiliado puede
+        colocar cookies en tu navegador para atribuir la referencia. Esta actividad está
+        gobernada por la política de privacidad de WPT Global, no por la nuestra.
+      </p>
+
+      <h2>3. Base legal</h2>
+      <p>
+        La base legal para el tratamiento de datos analíticos es tu <strong>consentimiento</strong>,
+        que otorgas al aceptar las cookies en el banner de consentimiento.
+        Para las cookies esenciales (preferencia de consentimiento), la base legal es
+        el <strong>interés legítimo</strong> de recordar tu decisión.
+      </p>
+
+      <h2>4. Compartición de datos</h2>
+      <p>
+        No vendemos, alquilamos ni compartimos tus datos personales con terceros,
+        excepto con los proveedores de servicio necesarios para el funcionamiento del sitio:
+      </p>
+      <p>
+        <strong>Google LLC</strong> (Google Analytics / Tag Manager) — Política de privacidad:
+        <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">policies.google.com/privacy</a>
+      </p>
+      <p>
+        <strong>Cloudflare, Inc.</strong> (hosting y CDN) — Política de privacidad:
+        <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">cloudflare.com/privacypolicy</a>
+      </p>
+
+      <h2>5. Tus derechos</h2>
+      <p>
+        Tienes derecho a acceder, rectificar, suprimir y portar tus datos, así como a
+        oponerte o limitar su tratamiento. Para ejercer estos derechos, contacta con nosotros
+        en <strong>contacto@clerigopoker.com</strong>.
+      </p>
+
+      <h2>6. Retención de datos</h2>
+      <p>
+        Los datos de Google Analytics se retienen durante 14 meses, tras lo cual se eliminan
+        automáticamente. La preferencia de cookies se almacena localmente en tu navegador
+        sin fecha de expiración (puedes borrarla cuando quieras).
+      </p>
+
+      <h2>7. Seguridad</h2>
+      <p>
+        Este sitio se sirve exclusivamente a través de HTTPS con cabeceras de seguridad
+        robustas (HSTS, CSP, X-Frame-Options). Tu conexión está cifrada en todo momento.
+      </p>
+
+      <h2>8. Cambios en esta política</h2>
+      <p>
+        Podemos actualizar esta política ocasionalmente. Cuando lo hagamos, actualizaremos
+        la fecha de "Última actualización" en la parte superior. Te recomendamos revisarla
+        periódicamente.
+      </p>
+
+      <h2>9. Contacto</h2>
+      <p>
+        Si tienes preguntas sobre esta política, escríbenos a
+        <strong>contacto@clerigopoker.com</strong>.
+      </p>
+    </div>
+  </article>
+</BaseLayout>

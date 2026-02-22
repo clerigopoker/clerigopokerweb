@@ -28,6 +28,11 @@ const articleSchema = z.object({
   // Reading
   readingTime: z.number().optional(), // minutes, auto-calculated
   difficulty: z.enum(['novicio', 'acólito', 'sacerdote', 'obispo']).optional(),
+  // CTA personalizado (opcional — si no se pone, usa el default)
+  ctaEyebrow: z.string().optional(),
+  ctaHeadline: z.string().optional(),
+  ctaBody: z.string().optional(),
+  ctaCta: z.string().optional(),
 });
 
 // ============================================

@@ -1,12 +1,12 @@
 ---
 /**
- * Analytics.astro — Google Tag Manager
- * Carga diferida para no impactar performance.
+ * Analytics.astro — Google Tag Manager (consent-gated)
+ * Solo carga GTM si el usuario acepta cookies.
  * 
  * INSTRUCCIONES:
  * 1. Crea tu contenedor en tagmanager.google.com
  * 2. Reemplaza GTM-XXXXXXX con tu ID real
- * 3. Configura GA4 DENTRO de GTM (no directamente)
+ * 3. Configura GA4 DENTRO de GTM
  */
 
 interface Props {
@@ -16,24 +16,46 @@ interface Props {
 const { gtmId = 'GTM-XXXXXXX' } = Astro.props;
 ---
 
-<!-- Google Tag Manager (head) — carga async para no bloquear render -->
-<script
-  is:inline
-  define:vars={{ gtmId }}
->
-  // Defer GTM load until after page is interactive
-  window.addEventListener('load', function () {
-    setTimeout(function () {
-      (function (w, d, s, l, i) {
-        w[l] = w[l] || [];
-        w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
-        var f = d.getElementsByTagName(s)[0],
-          j = d.createElement(s),
-          dl = l != 'dataLayer' ? '&l=' + l : '';
-        j.async = true;
-        j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
-        f.parentNode.insertBefore(j, f);
-      })(window, document, 'script', 'dataLayer', gtmId);
-    }, 1500); // 1.5s delay — no impacta LCP ni FID
+<script is:inline define:vars={{ gtmId }}>
+  // Google Consent Mode v2 defaults — deny until consent
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('consent', 'default', {
+    'ad_storage': 'denied',
+    'ad_user_data': 'denied',
+    'ad_personalization': 'denied',
+    'analytics_storage': 'denied',
+    'wait_for_update': 500
   });
+
+  function loadGTM() {
+    // Avoid double-loading
+    if (window._gtmLoaded) return;
+    window._gtmLoaded = true;
+
+    // Update consent
+    gtag('consent', 'update', {
+      'analytics_storage': 'granted'
+    });
+
+    // Load GTM script
+    (function(w,d,s,l,i){
+      w[l]=w[l]||[];
+      w[l].push({'gtm.start': new Date().getTime(), event:'gtm.js'});
+      var f=d.getElementsByTagName(s)[0],
+          j=d.createElement(s),
+          dl=l!='dataLayer'?'&l='+l:'';
+      j.async=true;
+      j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
+      f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer', gtmId);
+  }
+
+  // Listen for consent
+  window.addEventListener('cookie-consent-granted', loadGTM);
+
+  // Also check if consent was already given (page reload)
+  if (localStorage.getItem('cp_cookie_consent') === 'all') {
+    loadGTM();
+  }
 </script>

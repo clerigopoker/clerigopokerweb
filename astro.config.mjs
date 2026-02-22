@@ -10,7 +10,11 @@ export default defineConfig({
   
   integrations: [
     sitemap({
-      filter: (page) => !page.includes('/404'),
+      filter: (page) =>
+        !page.includes('/404') &&
+        !page.includes('/politica-de-privacidad') &&
+        !page.includes('/politica-de-cookies') &&
+        !page.includes('/terminos-y-condiciones'),
       changefreq: 'weekly',
       priority: 0.7,
       lastmod: new Date(),

@@ -12,6 +12,7 @@ import SEOHead from '@/components/SEOHead.astro';
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
 import CTAWpt from '@/components/CTAWpt.astro';
+import CookieConsent from '@/components/CookieConsent.astro';
 import Analytics from '@/components/Analytics.astro';
 import { getWebSiteSchema, type SEOProps } from '@/utils/seo';
 import '@/styles/global.css';
@@ -21,11 +22,20 @@ interface Props extends SEOProps {
   hideCTA?: boolean;
   /** Variante del CTA */
   ctaVariant?: 'default' | 'sermon' | 'confesion';
+  /** Copy personalizado del CTA (sobreescribe variante) */
+  ctaEyebrow?: string;
+  ctaHeadline?: string;
+  ctaBody?: string;
+  ctaCta?: string;
 }
 
 const {
   hideCTA = false,
   ctaVariant = 'default',
+  ctaEyebrow,
+  ctaHeadline,
+  ctaBody,
+  ctaCta,
   ...seoProps
 } = Astro.props;
 
@@ -65,8 +75,10 @@ const websiteSchema = getWebSiteSchema();
       <slot />
     </main>
 
-    {!hideCTA && <CTAWpt variant={ctaVariant} />}
+    {!hideCTA && <CTAWpt variant={ctaVariant} customEyebrow={ctaEyebrow} customHeadline={ctaHeadline} customBody={ctaBody} customCta={ctaCta} />}
 
     <Footer />
+
+    <CookieConsent />
   </body>
 </html>
