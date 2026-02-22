@@ -3,7 +3,6 @@ import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 
-// https://astro.build/config
 export default defineConfig({
   site: 'https://clerigopoker.com',
   output: 'static',
@@ -27,16 +26,23 @@ export default defineConfig({
 
   vite: {
     plugins: [tailwindcss()],
+    build: {
+      // Smaller CSS chunks
+      cssCodeSplit: true,
+      // Minify aggressively
+      minify: 'esbuild',
+      // Inline assets smaller than 4KB
+      assetsInlineLimit: 4096,
+    },
   },
 
   image: {
-    // Sharp for AVIF optimization
     service: { entrypoint: 'astro/assets/services/sharp' },
   },
 
   build: {
-    // Inline small styles for performance
-    inlineStylesheets: 'auto',
+    // Inline all stylesheets to avoid render-blocking CSS files
+    inlineStylesheets: 'always',
     assets: '_astro',
   },
 
