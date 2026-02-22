@@ -105,4 +105,10 @@ Busca una calculadora de push or fold online (ICMIZER o HoldemResources tienen v
 
 Te garantizo que serán más amplios de lo que crees. La primera vez que veas que empujar J5 suited desde el botón con 10 big blinds es matemáticamente correcto, tu cerebro se resistirá. Déjalo que se resista. Después, obedece a las matemáticas.
 
+## La Herramienta del Clérigo
+
+¿Quieres dejar de memorizar tablas como un acólito obediente y empezar a consultar como un sacerdote? El Clérigo ha construido **[El Oráculo Push or Fold](/herramientas/calculadora-push-or-fold)** basado en Nash Equilibrium. Seleccionas tu posición, tu stack en big blinds y lo que pasó antes de ti, y el Oráculo te ilumina la matriz completa de 169 manos: las que debes empujar brillan en verde, las que debes foldear se quedan en la oscuridad. Haz clic en cualquier mano para ver su veredicto individual.
+
+Úsala. Estúdiala. Hazla tuya. Y la próxima vez que estés con 10 big blinds en la burbuja con K9 offsuit en el cutoff, no necesitarás fe. Necesitarás la matriz. Y la matriz estará de tu lado.
+
 **Amén.**
