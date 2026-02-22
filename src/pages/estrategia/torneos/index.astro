@@ -1,0 +1,28 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+---
+
+<BaseLayout
+  title="Estrategia de Torneos"
+  description="Guías de estrategia de torneos de póker: ICM, burbuja, mesa final, push/fold y la guerra de desgaste donde solo sobrevive el más devoto."
+>
+  <section class="mx-auto max-w-4xl px-4 py-10 sm:px-6">
+    <Breadcrumb items={[
+      { name: 'Estrategia', url: '/estrategia' },
+      { name: 'Torneos', url: '/estrategia/torneos' },
+    ]} />
+    <header class="mb-12">
+      <h1 class="font-display text-4xl font-bold text-scripture sm:text-5xl">
+        ♠ Estrategia de <span class="text-sacred">Torneos</span>
+      </h1>
+      <p class="mt-4 max-w-2xl text-lg text-psalm">
+        ICM, burbuja, mesa final. La guerra de desgaste donde pagas una entrada
+        y rezas para que tu fe (y tu stack) aguanten hasta el final.
+      </p>
+    </header>
+    <div class="card-altar text-center py-12">
+      <p class="text-psalm text-lg">🕯️ Los primeros sermones de torneos están en camino...</p>
+    </div>
+  </section>
+</BaseLayout>

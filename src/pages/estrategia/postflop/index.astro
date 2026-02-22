@@ -1,0 +1,28 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+---
+
+<BaseLayout
+  title="Estrategia Post-Flop"
+  description="Guías de estrategia post-flop: continuation bets, pot control, check-raises, y el arte de navegar texturas de board como un sacerdote del green felt."
+>
+  <section class="mx-auto max-w-4xl px-4 py-10 sm:px-6">
+    <Breadcrumb items={[
+      { name: 'Estrategia', url: '/estrategia' },
+      { name: 'Post-Flop', url: '/estrategia/postflop' },
+    ]} />
+    <header class="mb-12">
+      <h1 class="font-display text-4xl font-bold text-scripture sm:text-5xl">
+        ♠ Estrategia <span class="text-sacred">Post-Flop</span>
+      </h1>
+      <p class="mt-4 max-w-2xl text-lg text-psalm">
+        Donde la verdadera magia —y el verdadero dolor— ocurren.
+        C-bets, pot control, check-raises, y cómo leer texturas de board como si fueran escrituras sagradas.
+      </p>
+    </header>
+    <div class="card-altar text-center py-12">
+      <p class="text-psalm text-lg">🕯️ Los primeros sermones post-flop están en camino...</p>
+    </div>
+  </section>
+</BaseLayout>

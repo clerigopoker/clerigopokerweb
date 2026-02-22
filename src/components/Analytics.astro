@@ -1,0 +1,39 @@
+---
+/**
+ * Analytics.astro — Google Tag Manager
+ * Carga diferida para no impactar performance.
+ * 
+ * INSTRUCCIONES:
+ * 1. Crea tu contenedor en tagmanager.google.com
+ * 2. Reemplaza GTM-XXXXXXX con tu ID real
+ * 3. Configura GA4 DENTRO de GTM (no directamente)
+ */
+
+interface Props {
+  gtmId?: string;
+}
+
+const { gtmId = 'GTM-XXXXXXX' } = Astro.props;
+---
+
+<!-- Google Tag Manager (head) — carga async para no bloquear render -->
+<script
+  is:inline
+  define:vars={{ gtmId }}
+>
+  // Defer GTM load until after page is interactive
+  window.addEventListener('load', function () {
+    setTimeout(function () {
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != 'dataLayer' ? '&l=' + l : '';
+        j.async = true;
+        j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, 'script', 'dataLayer', gtmId);
+    }, 1500); // 1.5s delay — no impacta LCP ni FID
+  });
+</script>

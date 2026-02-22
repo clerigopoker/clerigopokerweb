@@ -1,0 +1,28 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+---
+
+<BaseLayout
+  title="Tilt en el Póker"
+  description="Guías para entender, prevenir y controlar el tilt. El demonio más antiguo del póker explicado con ciencia, estrategia y humor negro."
+>
+  <section class="mx-auto max-w-4xl px-4 py-10 sm:px-6">
+    <Breadcrumb items={[
+      { name: 'Psicología', url: '/psicologia' },
+      { name: 'Tilt', url: '/psicologia/tilt' },
+    ]} />
+    <header class="mb-12">
+      <h1 class="font-display text-4xl font-bold text-scripture sm:text-5xl">
+        😈 <span class="text-blood-light">Tilt</span>
+      </h1>
+      <p class="mt-4 max-w-2xl text-lg text-psalm">
+        El demonio más antiguo del póker. Todos lo hemos sufrido, pocos lo entienden de verdad.
+        Aquí lo desarmamos pieza por pieza para que nunca más te controle.
+      </p>
+    </header>
+    <div class="card-altar text-center py-12">
+      <p class="text-psalm text-lg">🕯️ Los exorcismos están en preparación...</p>
+    </div>
+  </section>
+</BaseLayout>

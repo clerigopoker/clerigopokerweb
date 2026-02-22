@@ -1,0 +1,51 @@
+---
+/**
+ * /noticias/index.astro — Landing page del silo Noticias
+ */
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+import ArticleCard from '@/components/ArticleCard.astro';
+
+const allPosts = await getCollection('noticias', ({ data }) => !data.draft);
+const posts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<BaseLayout
+  title="Noticias de Póker"
+  description="Actualidad del póker mundial filtrada por la perspectiva irreverente del Clérigo. Resultados, fichajes, escándalos y movimientos de la industria. Sin PR corporativo."
+>
+  <section class="mx-auto max-w-4xl px-4 py-10 sm:px-6">
+    <Breadcrumb items={[{ name: 'Noticias', url: '/noticias' }]} />
+
+    <header class="mb-12">
+      <h1 class="font-display text-4xl font-bold text-scripture sm:text-5xl">
+        📰 <span class="text-sacred">Noticias</span>
+      </h1>
+      <p class="mt-4 max-w-2xl text-lg text-psalm">
+        Lo que pasa en el mundo del póker, contado sin filtros ni comunicados de prensa.
+        Si buscas un portal corporativo, hermano, estás en la iglesia equivocada.
+      </p>
+    </header>
+
+    {posts.length > 0 ? (
+      <div class="grid gap-6 sm:grid-cols-2">
+        {posts.map((post) => (
+          <ArticleCard
+            title={post.data.title}
+            description={post.data.description}
+            href={`/noticias/${post.id}`}
+            pubDate={post.data.pubDate}
+            tags={post.data.tags}
+            image={post.data.image}
+          />
+        ))}
+      </div>
+    ) : (
+      <div class="card-altar text-center py-12">
+        <p class="text-psalm text-lg">🕯️ Las primeras noticias se están escribiendo...</p>
+        <p class="text-whisper text-sm mt-2">El Clérigo está afilando la pluma. Vuelve pronto.</p>
+      </div>
+    )}
+  </section>
+</BaseLayout>

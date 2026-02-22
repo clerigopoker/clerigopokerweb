@@ -1,0 +1,72 @@
+---
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="relative mt-24 border-t border-chalice/15" style="background: linear-gradient(180deg, var(--color-vestment) 0%, var(--color-abyss) 100%);">
+  <!-- Top gold accent -->
+  <div class="absolute top-0 left-[10%] right-[10%] h-px" style="background: linear-gradient(90deg, transparent, rgba(212, 168, 71, 0.15), transparent);"></div>
+
+  <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
+
+      <!-- Brand -->
+      <div class="lg:col-span-1">
+        <a href="/" class="group inline-flex items-center gap-2 text-scripture no-underline">
+          <span class="flex h-8 w-8 items-center justify-center rounded-lg text-sm" style="background: linear-gradient(135deg, rgba(212,168,71,0.12), rgba(212,168,71,0.04)); border: 1px solid rgba(212,168,71,0.15);">✝</span>
+          <span class="font-display text-sm font-bold tracking-[0.12em]">
+            <span class="text-sacred">CLÉRIGO</span>
+            <span class="text-psalm"> POKER</span>
+          </span>
+        </a>
+        <p class="mt-4 text-sm leading-relaxed text-whisper">
+          Donde la estrategia es religión y cada mano es un sermón.
+          Bienvenido a la parroquia del green felt.
+        </p>
+      </div>
+
+      <!-- Estrategia -->
+      <div>
+        <h3 class="font-display text-[0.6875rem] font-bold uppercase tracking-[0.2em] text-gold/60">Estrategia</h3>
+        <ul class="mt-4 space-y-2.5">
+          <li><a href="/estrategia/preflop" class="text-sm text-whisper transition-colors hover:text-scripture">Pre-Flop</a></li>
+          <li><a href="/estrategia/postflop" class="text-sm text-whisper transition-colors hover:text-scripture">Post-Flop</a></li>
+          <li><a href="/estrategia/torneos" class="text-sm text-whisper transition-colors hover:text-scripture">Torneos</a></li>
+          <li><a href="/estrategia/cash-game" class="text-sm text-whisper transition-colors hover:text-scripture">Cash Game</a></li>
+        </ul>
+      </div>
+
+      <!-- Psicología -->
+      <div>
+        <h3 class="font-display text-[0.6875rem] font-bold uppercase tracking-[0.2em] text-gold/60">Psicología</h3>
+        <ul class="mt-4 space-y-2.5">
+          <li><a href="/psicologia/tilt" class="text-sm text-whisper transition-colors hover:text-scripture">Tilt</a></li>
+          <li><a href="/psicologia/mindset" class="text-sm text-whisper transition-colors hover:text-scripture">Mindset</a></li>
+          <li><a href="/psicologia/bankroll-management" class="text-sm text-whisper transition-colors hover:text-scripture">Bankroll</a></li>
+        </ul>
+      </div>
+
+      <!-- Comunidad -->
+      <div>
+        <h3 class="font-display text-[0.6875rem] font-bold uppercase tracking-[0.2em] text-gold/60">La Parroquia</h3>
+        <ul class="mt-4 space-y-2.5">
+          <li><a href="/noticias" class="text-sm text-whisper transition-colors hover:text-scripture">Noticias</a></li>
+          <li><a href="/conceptos" class="text-sm text-whisper transition-colors hover:text-scripture">Conceptos</a></li>
+          <li><a href="/sobre" class="text-sm text-whisper transition-colors hover:text-scripture">Sobre el Clérigo</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div class="my-10 h-px" style="background: linear-gradient(90deg, transparent, var(--color-chalice) 50%, transparent);"></div>
+
+    <!-- Bottom bar -->
+    <div class="flex flex-col items-center justify-between gap-3 sm:flex-row">
+      <p class="text-xs text-whisper/50">
+        &copy; {currentYear} Clérigo Poker · Todos los pecados reservados
+      </p>
+      <p class="text-xs text-whisper/40">
+        +18 · Juega con responsabilidad
+      </p>
+    </div>
+  </div>
+</footer>

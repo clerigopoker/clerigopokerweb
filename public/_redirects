@@ -1,0 +1,13 @@
+# ============================================
+# CLÉRIGO POKER — Cloudflare Pages Redirects
+# Redirecciones 301 y trailing slash consistency
+# ============================================
+
+# Forzar sin trailing slash (consistencia con canonical URLs)
+# Cloudflare Pages maneja esto por defecto, pero por si acaso:
+
+# Redirect www → non-www (configurar en Cloudflare DNS, no aquí)
+# https://www.clerigopoker.com/* https://clerigopoker.com/:splat 301
+
+# Futuras redirecciones de contenido antiguo:
+# /old-url /new-url 301

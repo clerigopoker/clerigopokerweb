@@ -1,0 +1,72 @@
+---
+/**
+ * BaseLayout.astro — Layout maestro del Clérigo Poker
+ * Envuelve TODAS las páginas. Incluye:
+ * - SEO Head (meta, OG, Twitter)
+ * - Header + Footer
+ * - CTA WPT Global
+ * - Analytics (GTM)
+ * - Schema.org WebSite
+ */
+import SEOHead from '@/components/SEOHead.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import CTAWpt from '@/components/CTAWpt.astro';
+import Analytics from '@/components/Analytics.astro';
+import { getWebSiteSchema, type SEOProps } from '@/utils/seo';
+import '@/styles/global.css';
+
+interface Props extends SEOProps {
+  /** Si true, no muestra el CTA de WPT al final */
+  hideCTA?: boolean;
+  /** Variante del CTA */
+  ctaVariant?: 'default' | 'sermon' | 'confesion';
+}
+
+const {
+  hideCTA = false,
+  ctaVariant = 'default',
+  ...seoProps
+} = Astro.props;
+
+const websiteSchema = getWebSiteSchema();
+---
+
+<!doctype html>
+<html lang="es" dir="ltr">
+  <head>
+    <SEOHead {...seoProps} />
+    <Analytics />
+    <!-- Schema.org WebSite (global) -->
+    <script type="application/ld+json" set:html={websiteSchema} />
+  </head>
+  <body class="min-h-screen bg-abyss text-scripture antialiased">
+    <!-- GTM noscript fallback -->
+    <noscript>
+      <iframe
+        src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+        height="0"
+        width="0"
+        style="display:none;visibility:hidden"
+        title="Google Tag Manager"
+      ></iframe>
+    </noscript>
+
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-gold focus:px-4 focus:py-2 focus:text-abyss focus:font-bold"
+    >
+      Saltar al contenido principal
+    </a>
+
+    <Header />
+
+    <main id="main-content" class="pt-16">
+      <slot />
+    </main>
+
+    {!hideCTA && <CTAWpt variant={ctaVariant} />}
+
+    <Footer />
+  </body>
+</html>

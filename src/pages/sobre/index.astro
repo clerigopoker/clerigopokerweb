@@ -1,0 +1,68 @@
+---
+/**
+ * /sobre/index.astro — Página Sobre el Clérigo
+ * Esencial para E-E-A-T (Experience, Expertise, Authoritativeness, Trustworthiness)
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+---
+
+<BaseLayout
+  title="Sobre el Clérigo"
+  description="¿Quién es el Clérigo del Poker? La historia detrás del sacerdote hereje del green felt. Experiencia, filosofía y por qué este portal existe."
+>
+  <section class="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+    <Breadcrumb items={[{ name: 'Sobre el Clérigo', url: '/sobre' }]} />
+
+    <header class="mb-10">
+      <h1 class="font-display text-4xl font-bold text-scripture sm:text-5xl">
+        ✝ <span class="text-sacred">Sobre el Clérigo</span>
+      </h1>
+    </header>
+
+    <div class="prose-clerigo">
+      <p>
+        Hay dos tipos de jugadores de póker: los que buscan fórmulas mágicas y los que buscan la verdad.
+        Si perteneces al primer grupo, Google tiene miles de páginas genéricas esperándote.
+        Si perteneces al segundo, bienvenido a la parroquia.
+      </p>
+
+      <p>
+        El Clérigo nació de la frustración. Frustración de leer el mismo artículo mediocre
+        sobre "cómo jugar ases de bolsillo" en 47 sitios distintos. Frustración de ver cómo
+        el contenido de póker en español era, en el mejor de los casos, una traducción descafeinada
+        del inglés. En el peor, directamente malo.
+      </p>
+
+      <p>
+        Así que decidí oficiar mi propia misa. Una donde la estrategia se explique con profundidad real,
+        la psicología se trate con rigor y un toque de humor negro, y las noticias se cuenten
+        sin el filtro corporativo que convierte cada noticia en un comunicado de prensa insípido.
+      </p>
+
+      <blockquote>
+        "No vengo a enseñarte a ganar. Vengo a enseñarte a pensar.
+        Ganar es un efecto secundario de pensar bien."
+      </blockquote>
+
+      <h2>¿Por qué "Clérigo"?</h2>
+
+      <p>
+        Porque el póker necesita devotos, no turistas. Porque la estrategia bien ejecutada
+        requiere la misma disciplina que un voto monástico. Y porque, seamos sinceros,
+        hay algo profundamente espiritual en sentarse ante un green felt y enfrentar
+        la incertidumbre con lógica, paciencia y un poco de locura calculada.
+      </p>
+
+      <p>
+        Este sitio es mi sermón permanente. Cada artículo, una plegaria al juego bien jugado.
+        Cada concepto explicado, un paso más hacia la iluminación pokeril.
+      </p>
+
+      <p>
+        <strong>Bienvenido a Clérigo Poker. Que las probabilidades estén de tu lado… y si no lo están,
+        que al menos sepas por qué.</strong>
+      </p>
+    </div>
+  </section>
+</BaseLayout>

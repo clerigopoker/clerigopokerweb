@@ -1,0 +1,89 @@
+---
+interface Props {
+  variant?: 'default' | 'sermon' | 'confesion';
+}
+
+const { variant = 'default' } = Astro.props;
+const AFFILIATE_URL = 'https://tracking.wptpartners.com/visit/?bta=35660&nci=8069';
+
+const copies = {
+  default: {
+    eyebrow: 'La Redención te Espera',
+    headline: '¿Listo para poner tu fe a prueba en las mesas?',
+    body: 'Todo buen clérigo necesita un altar donde oficiar. WPT Global es donde los devotos del green felt buscan la redención… o al menos un bote decente. Entra, siéntate, y que las cartas decidan si eres santo o pecador.',
+    cta: 'Pecar en las Mesas',
+  },
+  sermon: {
+    eyebrow: 'Sermón del Domingo',
+    headline: 'Las escrituras dicen: "Foldea y serás libre"',
+    body: 'Pero a veces, hermano, hay que ir all-in con convicción. WPT Global tiene mesas para cada nivel de devoción. Desde el novicio que apenas distingue un flush de un straight, hasta el obispo que lee souls como versículos.',
+    cta: 'Buscar la Redención',
+  },
+  confesion: {
+    eyebrow: 'Confesionario Abierto',
+    headline: 'Confiesa tus pecados pokeriles y empieza de nuevo',
+    body: 'Todos hemos hecho un call vergonzoso a las 3 AM con J4 offsuit. No te juzgamos. En WPT Global puedes empezar una nueva vida. Nuevas mesas, nuevo bankroll, misma adicción sagrada.',
+    cta: 'Iniciar mi Penitencia',
+  },
+};
+
+const copy = copies[variant];
+---
+
+<aside class="mx-auto mt-16 mb-8 max-w-3xl px-4" role="complementary" aria-label="Promoción WPT Global">
+  <div class="relative overflow-hidden rounded-2xl" style="background: linear-gradient(160deg, rgba(20, 20, 31, 0.95) 0%, rgba(8, 8, 13, 0.98) 100%); border: 1px solid rgba(212, 168, 71, 0.12);">
+
+    <!-- Top gold line -->
+    <div class="absolute top-0 left-[5%] right-[5%] h-px" style="background: linear-gradient(90deg, transparent, var(--color-gold), transparent); opacity: 0.6;"></div>
+
+    <!-- Corner accents -->
+    <div class="absolute top-0 left-0 h-16 w-16 opacity-20" style="background: radial-gradient(circle at 0% 0%, var(--color-gold) 0%, transparent 70%);"></div>
+    <div class="absolute top-0 right-0 h-16 w-16 opacity-20" style="background: radial-gradient(circle at 100% 0%, var(--color-gold) 0%, transparent 70%);"></div>
+
+    <!-- Background glow -->
+    <div class="pointer-events-none absolute left-1/2 top-0 h-[200px] w-[400px] -translate-x-1/2 opacity-[0.06]" style="background: radial-gradient(ellipse, var(--color-gold) 0%, transparent 70%); filter: blur(40px);"></div>
+
+    <div class="relative px-6 py-10 text-center sm:px-12 sm:py-12">
+      <!-- Cross icon -->
+      <div class="mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-full text-sm" style="background: rgba(212, 168, 71, 0.08); border: 1px solid rgba(212, 168, 71, 0.15);">
+        <span class="text-gold">✝</span>
+      </div>
+
+      <!-- Eyebrow -->
+      <p class="text-xs font-bold uppercase tracking-[0.2em] text-gold/70">
+        {copy.eyebrow}
+      </p>
+
+      <!-- Headline -->
+      <h3 class="mt-4 font-display text-xl font-bold text-scripture sm:text-2xl lg:text-[1.75rem]">
+        {copy.headline}
+      </h3>
+
+      <!-- Body -->
+      <p class="mx-auto mt-4 max-w-lg text-[0.9375rem] leading-relaxed text-psalm">
+        {copy.body}
+      </p>
+
+      <!-- CTA -->
+      <div class="mt-8">
+        <a
+          href={AFFILIATE_URL}
+          target="_blank"
+          rel="noopener noreferrer sponsored"
+          class="btn-communion animate-glow"
+        >
+          {copy.cta}
+          <span aria-hidden="true">→</span>
+        </a>
+      </div>
+
+      <!-- Disclaimer -->
+      <p class="mt-5 text-[0.6875rem] text-whisper/60">
+        +18 · Juego responsable · Términos y condiciones en la plataforma
+      </p>
+    </div>
+
+    <!-- Bottom gold line -->
+    <div class="absolute bottom-0 left-[15%] right-[15%] h-px" style="background: linear-gradient(90deg, transparent, rgba(184, 145, 46, 0.3), transparent);"></div>
+  </div>
+</aside>

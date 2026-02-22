@@ -1,0 +1,28 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+---
+
+<BaseLayout
+  title="Estrategia Cash Game"
+  description="Guías de estrategia de cash game: stacks profundos, explotación, thin value bets y el templo del jugador paciente y calculador."
+>
+  <section class="mx-auto max-w-4xl px-4 py-10 sm:px-6">
+    <Breadcrumb items={[
+      { name: 'Estrategia', url: '/estrategia' },
+      { name: 'Cash Game', url: '/estrategia/cash-game' },
+    ]} />
+    <header class="mb-12">
+      <h1 class="font-display text-4xl font-bold text-scripture sm:text-5xl">
+        ♠ Estrategia <span class="text-sacred">Cash Game</span>
+      </h1>
+      <p class="mt-4 max-w-2xl text-lg text-psalm">
+        Stacks profundos, decisiones profundas. El templo del jugador paciente y calculador.
+        Aquí no hay burbuja ni ICM: solo tú, tu stack y la verdad desnuda de cada spot.
+      </p>
+    </header>
+    <div class="card-altar text-center py-12">
+      <p class="text-psalm text-lg">🕯️ Los primeros sermones de cash están en camino...</p>
+    </div>
+  </section>
+</BaseLayout>

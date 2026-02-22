@@ -1,0 +1,36 @@
+---
+/**
+ * /conceptos/index.astro — Glosario de conceptos de póker
+ * Silo SEO de contenido evergreen
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+---
+
+<BaseLayout
+  title="Conceptos de Póker"
+  description="Glosario completo de términos y conceptos de póker explicados por el Clérigo. Desde equity hasta ICM, cada término con profundidad real y ejemplos prácticos."
+>
+  <section class="mx-auto max-w-4xl px-4 py-10 sm:px-6">
+    <Breadcrumb items={[{ name: 'Conceptos', url: '/conceptos' }]} />
+
+    <header class="mb-12">
+      <h1 class="font-display text-4xl font-bold text-scripture sm:text-5xl">
+        📖 <span class="text-sacred">Conceptos</span>
+      </h1>
+      <p class="mt-4 max-w-2xl text-lg text-psalm">
+        El diccionario sagrado del póker. No es un glosario aburrido de dos líneas por término:
+        cada concepto está explicado con la profundidad que merece.
+      </p>
+    </header>
+
+    <div class="card-altar text-center py-12">
+      <p class="text-psalm text-lg">
+        📜 El pergamino se está redactando...
+      </p>
+      <p class="text-whisper text-sm mt-2">
+        Los primeros conceptos llegarán pronto. Paciencia, que es virtud cardinal.
+      </p>
+    </div>
+  </section>
+</BaseLayout>

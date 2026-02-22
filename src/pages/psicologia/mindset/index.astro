@@ -1,0 +1,28 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+---
+
+<BaseLayout
+  title="Mindset del Jugador de Póker"
+  description="Mentalidad ganadora en el póker: disciplina, enfoque, A-game y la capacidad de mantenerte firme cuando el variance golpea con fuerza."
+>
+  <section class="mx-auto max-w-4xl px-4 py-10 sm:px-6">
+    <Breadcrumb items={[
+      { name: 'Psicología', url: '/psicologia' },
+      { name: 'Mindset', url: '/psicologia/mindset' },
+    ]} />
+    <header class="mb-12">
+      <h1 class="font-display text-4xl font-bold text-scripture sm:text-5xl">
+        🧘 <span class="text-incense-light">Mindset</span>
+      </h1>
+      <p class="mt-4 max-w-2xl text-lg text-psalm">
+        La mentalidad del ganador no es un don: es una disciplina.
+        Enfoque, resiliencia y la capacidad de jugar tu mejor juego incluso cuando todo arde.
+      </p>
+    </header>
+    <div class="card-altar text-center py-12">
+      <p class="text-psalm text-lg">🕯️ Las meditaciones están en preparación...</p>
+    </div>
+  </section>
+</BaseLayout>

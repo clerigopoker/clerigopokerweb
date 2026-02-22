@@ -1,0 +1,192 @@
+---
+const currentPath = Astro.url.pathname;
+
+interface NavItem {
+  label: string;
+  href: string;
+  children?: NavItem[];
+}
+
+const navItems: NavItem[] = [
+  {
+    label: 'Estrategia',
+    href: '/estrategia',
+    children: [
+      { label: 'Pre-Flop', href: '/estrategia/preflop' },
+      { label: 'Post-Flop', href: '/estrategia/postflop' },
+      { label: 'Torneos', href: '/estrategia/torneos' },
+      { label: 'Cash Game', href: '/estrategia/cash-game' },
+    ],
+  },
+  {
+    label: 'Psicología',
+    href: '/psicologia',
+    children: [
+      { label: 'Tilt', href: '/psicologia/tilt' },
+      { label: 'Mindset', href: '/psicologia/mindset' },
+      { label: 'Bankroll', href: '/psicologia/bankroll-management' },
+    ],
+  },
+  { label: 'Noticias', href: '/noticias' },
+  { label: 'Conceptos', href: '/conceptos' },
+  { label: 'Sobre el Clérigo', href: '/sobre' },
+];
+
+function isActive(href: string): boolean {
+  if (href === '/') return currentPath === '/';
+  return currentPath.startsWith(href);
+}
+---
+
+<header class="fixed top-0 left-0 right-0 z-50 border-b border-chalice/20" id="site-header">
+  <!-- Gold top accent line -->
+  <div class="h-[1px] w-full" style="background: linear-gradient(90deg, transparent 5%, var(--color-gold-dark) 30%, var(--color-gold) 50%, var(--color-gold-dark) 70%, transparent 95%); opacity: 0.4;"></div>
+
+  <div class="backdrop-blur-xl" style="background: rgba(8, 8, 13, 0.88);">
+    <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3.5 sm:px-6 lg:px-8" aria-label="Navegación principal">
+
+      <!-- Logo -->
+      <a href="/" class="group flex items-center gap-2.5 text-scripture no-underline" aria-label="Clérigo Poker — Inicio">
+        <span class="flex h-9 w-9 items-center justify-center rounded-lg text-lg transition-all duration-300 group-hover:shadow-[0_0_16px_rgba(212,168,71,0.3)]" style="background: linear-gradient(135deg, rgba(212,168,71,0.15), rgba(212,168,71,0.05)); border: 1px solid rgba(212,168,71,0.2);">
+          ✝
+        </span>
+        <span class="font-display text-base font-bold tracking-[0.15em] sm:text-lg">
+          <span class="text-sacred">CLÉRIGO</span>
+          <span class="text-psalm"> POKER</span>
+        </span>
+      </a>
+
+      <!-- Desktop Nav -->
+      <ul class="hidden items-center gap-0.5 lg:flex" role="menubar">
+        {navItems.map((item) => (
+          <li class="relative group" role="none">
+            <a
+              href={item.href}
+              role="menuitem"
+              class:list={[
+                'relative inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-[0.8125rem] font-medium tracking-wide transition-all duration-250',
+                isActive(item.href)
+                  ? 'text-gold'
+                  : 'text-psalm hover:text-scripture',
+              ]}
+              aria-current={isActive(item.href) ? 'page' : undefined}
+            >
+              {item.label}
+              {item.children && (
+                <svg class="h-3 w-3 opacity-50 transition-transform duration-300 group-hover:rotate-180 group-hover:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              )}
+              {isActive(item.href) && (
+                <span class="absolute bottom-0.5 left-1/2 h-[2px] w-5 -translate-x-1/2 rounded-full bg-gold" aria-hidden="true"></span>
+              )}
+            </a>
+            {item.children && (
+              <ul
+                class="invisible absolute left-1/2 top-full z-50 mt-2 min-w-[200px] -translate-x-1/2 rounded-xl border border-chalice/40 p-1.5 opacity-0 shadow-2xl transition-all duration-250 group-hover:visible group-hover:opacity-100"
+                style="background: rgba(14, 14, 22, 0.95); backdrop-filter: blur(20px);"
+                role="menu"
+              >
+                {/* Gold top accent */}
+                <div class="absolute -top-px left-1/4 right-1/4 h-px" style="background: linear-gradient(90deg, transparent, rgba(212, 168, 71, 0.4), transparent);"></div>
+                {item.children.map((child) => (
+                  <li role="none">
+                    <a
+                      href={child.href}
+                      role="menuitem"
+                      class:list={[
+                        'block rounded-lg px-3.5 py-2.5 text-[0.8125rem] font-medium transition-all duration-200',
+                        isActive(child.href)
+                          ? 'text-gold bg-gold/[0.06]'
+                          : 'text-psalm hover:bg-white/[0.03] hover:text-scripture hover:pl-4',
+                      ]}
+                    >
+                      {child.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+        ))}
+      </ul>
+
+      <!-- Mobile Toggle -->
+      <button
+        id="mobile-menu-btn"
+        class="relative inline-flex h-10 w-10 items-center justify-center rounded-lg text-psalm transition-all hover:text-scripture lg:hidden"
+        style="background: rgba(30, 30, 48, 0.4); border: 1px solid rgba(30, 30, 48, 0.6);"
+        aria-label="Abrir menú"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+      >
+        <svg class="h-5 w-5" id="menu-icon-open" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+        <svg class="hidden h-5 w-5" id="menu-icon-close" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div
+    id="mobile-menu"
+    class="hidden overflow-hidden border-t border-chalice/20 lg:hidden"
+    style="background: rgba(8, 8, 13, 0.96); backdrop-filter: blur(24px);"
+    role="menu"
+  >
+    <ul class="space-y-0.5 px-4 py-4">
+      {navItems.map((item) => (
+        <li>
+          <a
+            href={item.href}
+            class:list={[
+              'flex items-center gap-2 rounded-lg px-4 py-3 text-[0.9375rem] font-medium transition-all',
+              isActive(item.href)
+                ? 'text-gold bg-gold/[0.06]'
+                : 'text-psalm hover:bg-white/[0.03] hover:text-scripture',
+            ]}
+          >
+            {item.label}
+          </a>
+          {item.children && (
+            <ul class="ml-4 mt-0.5 space-y-0.5 border-l border-chalice/20 pl-3">
+              {item.children.map((child) => (
+                <li>
+                  <a
+                    href={child.href}
+                    class:list={[
+                      'block rounded-md px-3 py-2 text-sm transition-all',
+                      isActive(child.href)
+                        ? 'text-gold'
+                        : 'text-whisper hover:text-psalm',
+                    ]}
+                  >
+                    {child.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+        </li>
+      ))}
+    </ul>
+  </div>
+</header>
+
+<script>
+  const btn = document.getElementById('mobile-menu-btn');
+  const menu = document.getElementById('mobile-menu');
+  const iconOpen = document.getElementById('menu-icon-open');
+  const iconClose = document.getElementById('menu-icon-close');
+
+  btn?.addEventListener('click', () => {
+    const isOpen = menu?.classList.contains('hidden');
+    menu?.classList.toggle('hidden');
+    iconOpen?.classList.toggle('hidden');
+    iconClose?.classList.toggle('hidden');
+    btn.setAttribute('aria-expanded', String(isOpen));
+  });
+</script>
