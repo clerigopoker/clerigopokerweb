@@ -1,0 +1,679 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+---
+
+<BaseLayout
+  title="El Quiz del Pecador — ¿Cuánto sabes de póker realmente?"
+  description="Test interactivo de 20 preguntas situacionales de póker. Descubre si eres un Hereje, un Acólito o un Obispo del green felt. ¿Te atreves?"
+  ctaEyebrow="¿Aprobaste el Examen?"
+  ctaHeadline="Ahora demuestra tu nivel en una mesa real"
+  ctaBody="La teoría ya la tienes (o no). Solo hay una forma de saber si puedes aplicarla: sentarte a jugar. WPT Global tiene mesas para todos los niveles — desde herejes hasta obispos."
+  ctaCta="Poner a Prueba Mi Fe"
+>
+
+<section class="mx-auto max-w-3xl px-4 pt-10 pb-2 sm:px-6">
+  <Breadcrumb items={[
+    { name: 'Herramientas', url: '/herramientas' },
+    { name: 'Quiz del Pecador', url: '/herramientas/quiz-del-pecador' },
+  ]} />
+</section>
+
+<style is:global>
+  .quiz-zone {
+    --q-gold: #D4A847;
+    --q-gold-light: #E8C96A;
+    --q-abyss: #08080D;
+    --q-vestment: #0E0E16;
+    --q-altar: #1E1E30;
+    --q-chalice: #2A2A40;
+    --q-blood: #C41E3A;
+    --q-virtue: #4ADE80;
+    --q-sin: #F87171;
+  }
+
+  .quiz-card {
+    background: linear-gradient(135deg, rgba(14,14,22,0.95), rgba(8,8,13,0.98));
+    border: 1px solid rgba(42,42,64,0.6);
+    border-radius: 1.25rem;
+    padding: 2rem;
+  }
+
+  @media (min-width: 640px) {
+    .quiz-card { padding: 2.5rem; }
+  }
+
+  .quiz-option {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 1rem 1.25rem;
+    border-radius: 0.75rem;
+    border: 1px solid rgba(42,42,64,0.5);
+    background: rgba(14,14,22,0.6);
+    color: #B0B0C0;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .quiz-option:hover:not(.locked) {
+    border-color: rgba(212,168,71,0.4);
+    background: rgba(212,168,71,0.05);
+    color: #E0E0E8;
+    transform: translateY(-1px);
+  }
+
+  .quiz-option.correct {
+    border-color: var(--q-virtue);
+    background: rgba(74,222,128,0.08);
+    color: #E0E0E8;
+  }
+
+  .quiz-option.wrong {
+    border-color: var(--q-sin);
+    background: rgba(248,113,113,0.08);
+    color: #E0E0E8;
+  }
+
+  .quiz-option.locked {
+    cursor: default;
+    opacity: 0.5;
+  }
+
+  .quiz-option.correct.locked, .quiz-option.wrong.locked {
+    opacity: 1;
+  }
+
+  .quiz-progress-track {
+    height: 6px;
+    background: var(--q-altar);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .quiz-progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #B8912E, #D4A847, #E8C96A);
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .rank-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1.25rem;
+    border-radius: 9999px;
+    font-weight: 700;
+    font-size: 0.875rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .share-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    font-weight: 700;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    text-decoration: none;
+  }
+
+  .share-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+  }
+
+  .share-twitter {
+    background: #1DA1F2;
+    color: white;
+  }
+
+  .share-retry {
+    background: linear-gradient(135deg, #B8912E, #D4A847);
+    color: #08080D;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .slide-in {
+    animation: slideIn 0.4s ease-out both;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 15px rgba(212,168,71,0.1); }
+    50% { box-shadow: 0 0 30px rgba(212,168,71,0.25); }
+  }
+
+  .result-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  .explanation-box {
+    margin-top: 1rem;
+    padding: 1rem 1.25rem;
+    border-radius: 0.75rem;
+    background: rgba(212,168,71,0.04);
+    border-left: 3px solid var(--q-gold);
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: #B0B0C0;
+  }
+
+  .explanation-box strong {
+    color: var(--q-gold);
+  }
+
+  .hidden { display: none !important; }
+</style>
+
+<div class="quiz-zone mx-auto max-w-3xl px-4 pb-10 sm:px-6" id="quizApp">
+
+  <!-- ===== INTRO SCREEN ===== -->
+  <div id="quizIntro" class="quiz-card text-center slide-in">
+    <p class="text-xs font-bold uppercase tracking-[0.2em]" style="color: rgba(212,168,71,0.7);">Herramienta Sagrada</p>
+    <h1 class="mt-4 font-display text-3xl font-bold sm:text-4xl" style="color: #E0E0E8;">
+      😈 El Quiz <span style="background: linear-gradient(135deg, #D4A847, #E8C96A); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">del Pecador</span>
+    </h1>
+    <p class="mx-auto mt-4 max-w-lg text-[0.9375rem]" style="color: #B0B0C0;">
+      20 situaciones reales de póker. Cada respuesta correcta es una <strong style="color: #4ADE80;">virtud</strong>.
+      Cada error es un <strong style="color: #F87171;">pecado</strong>. Al final, el Clérigo te revelará
+      tu verdadero rango en la jerarquía del green felt.
+    </p>
+
+    <div class="mx-auto mt-8 max-w-sm space-y-3 text-left text-sm" style="color: #8888A0;">
+      <div class="flex items-center gap-3">
+        <span class="flex h-8 w-8 items-center justify-center rounded-lg text-sm" style="background: rgba(212,168,71,0.08); border: 1px solid rgba(212,168,71,0.15);">📋</span>
+        <span>20 preguntas situacionales</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="flex h-8 w-8 items-center justify-center rounded-lg text-sm" style="background: rgba(212,168,71,0.08); border: 1px solid rgba(212,168,71,0.15);">⏱️</span>
+        <span>~5 minutos para completar</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="flex h-8 w-8 items-center justify-center rounded-lg text-sm" style="background: rgba(212,168,71,0.08); border: 1px solid rgba(212,168,71,0.15);">🏆</span>
+        <span>5 rangos: del Hereje al Obispo</span>
+      </div>
+    </div>
+
+    <button id="startQuiz" class="share-btn share-retry mt-10" style="font-size: 1rem; padding: 1rem 2.5rem;">
+      ✝ Comenzar la Confesión
+    </button>
+  </div>
+
+  <!-- ===== QUESTION SCREEN ===== -->
+  <div id="quizQuestion" class="hidden">
+    <!-- Progress -->
+    <div class="mb-2 flex items-center justify-between text-xs font-semibold" style="color: #6A6A82;">
+      <span>Pregunta <span id="qNum">1</span> / 20</span>
+      <span><span id="qVirtues">0</span> virtudes · <span id="qSins">0</span> pecados</span>
+    </div>
+    <div class="quiz-progress-track mb-6">
+      <div id="qProgress" class="quiz-progress-fill" style="width: 5%;"></div>
+    </div>
+
+    <div class="quiz-card slide-in" id="qCard">
+      <!-- Category + Difficulty -->
+      <div class="mb-4 flex items-center gap-3">
+        <span id="qCategory" class="text-xs font-bold uppercase tracking-[0.15em]" style="color: rgba(212,168,71,0.6);">Estrategia</span>
+        <span id="qDifficulty" class="rounded-full px-2.5 py-0.5 text-[0.65rem] font-bold uppercase" style="background: rgba(212,168,71,0.1); color: #D4A847; border: 1px solid rgba(212,168,71,0.15);"></span>
+      </div>
+
+      <!-- Situation -->
+      <p id="qSituation" class="mb-6 text-[0.9375rem] leading-relaxed" style="color: #8888A0;"></p>
+
+      <!-- Question -->
+      <h2 id="qText" class="mb-6 font-display text-lg font-bold sm:text-xl" style="color: #E0E0E8;"></h2>
+
+      <!-- Options -->
+      <div id="qOptions" class="space-y-3"></div>
+
+      <!-- Explanation (hidden until answered) -->
+      <div id="qExplanation" class="explanation-box hidden"></div>
+
+      <!-- Next button (hidden until answered) -->
+      <div id="qNextWrap" class="mt-6 hidden text-center">
+        <button id="qNext" class="share-btn share-retry">
+          Siguiente Pregunta →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== RESULTS SCREEN ===== -->
+  <div id="quizResult" class="hidden">
+    <div class="quiz-card text-center slide-in result-glow">
+      <p class="text-xs font-bold uppercase tracking-[0.2em]" style="color: rgba(212,168,71,0.5);">Tu Veredicto</p>
+
+      <!-- Rank icon -->
+      <div id="rIcon" class="mt-6 text-6xl"></div>
+
+      <!-- Rank title -->
+      <h2 id="rTitle" class="mt-4 font-display text-3xl font-bold sm:text-4xl" style="color: #E0E0E8;"></h2>
+
+      <!-- Rank badge -->
+      <div class="mt-4">
+        <span id="rBadge" class="rank-badge"></span>
+      </div>
+
+      <!-- Score -->
+      <p class="mt-6 text-lg" style="color: #B0B0C0;">
+        <strong id="rScore" style="color: #D4A847;"></strong> de 20 respuestas correctas
+      </p>
+
+      <!-- Virtues / Sins bar -->
+      <div class="mx-auto mt-4 max-w-xs">
+        <div class="flex justify-between text-xs font-bold mb-1">
+          <span style="color: #4ADE80;">✓ <span id="rVirtues">0</span> virtudes</span>
+          <span style="color: #F87171;">✗ <span id="rSins">0</span> pecados</span>
+        </div>
+        <div class="quiz-progress-track">
+          <div id="rBar" class="quiz-progress-fill" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <!-- Clérigo commentary -->
+      <p id="rComment" class="mx-auto mt-8 max-w-md text-[0.9375rem] leading-relaxed" style="color: #B0B0C0;"></p>
+
+      <!-- Share buttons -->
+      <div class="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+        <a id="shareTwitter" href="#" target="_blank" rel="noopener noreferrer" class="share-btn share-twitter">
+          <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          Compartir en X
+        </a>
+        <button id="retryQuiz" class="share-btn share-retry">
+          🔄 Intentar de Nuevo
+        </button>
+      </div>
+
+      <!-- CTA hint -->
+      <p class="mt-8 text-xs" style="color: #6A6A82;">
+        ¿No estás de acuerdo con tu rango? Solo hay una forma de demostrarlo: en la mesa.
+      </p>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+(function() {
+  'use strict';
+
+  // ╔══════════════════════════════════════════════════════════╗
+  // ║  20 PREGUNTAS DEL QUIZ DEL PECADOR                      ║
+  // ╚══════════════════════════════════════════════════════════╝
+
+  const QUESTIONS = [
+    {
+      category: "Pre-Flop", difficulty: "Novicio",
+      situation: "Estás en UTG (Under The Gun) en una mesa de 9 jugadores con 100 BB. Recibes J♠ T♠.",
+      question: "¿Cuál es la mejor acción?",
+      options: ["Raise a 2.5 BB", "Limp", "Fold", "Raise a 5 BB"],
+      correct: 2,
+      explanation: "J♠T♠ es una mano especulativa que parece bonita, pero desde UTG tienes 8 jugadores detrás que pueden despertar con manos premium. Foldear es la decisión correcta en esta posición. Desde el cutoff o botón, sería un raise claro."
+    },
+    {
+      category: "Post-Flop", difficulty: "Acólito",
+      situation: "Abriste desde el botón con A♠ K♦ y solo la ciega grande pagó. El flop es 7♥ 4♣ 2♠. La ciega grande hace check.",
+      question: "¿Cuál es la mejor acción?",
+      options: ["Check detrás", "Apostar 1/3 del bote", "Apostar 3/4 del bote", "Apostar el bote completo"],
+      correct: 1,
+      explanation: "C-bet de 1/3 del bote es perfecto aquí. El board es extremadamente seco (no hay draws), así que no necesitas apostar grande para protegerte. Una apuesta pequeña logra que manos peores paguen y que manos como 5-6 o 3-5 foldeen. Apostar grande sería desperdiciar fichas."
+    },
+    {
+      category: "Pot Odds", difficulty: "Novicio",
+      situation: "Estás en el turn con un flush draw (9 outs). El bote tiene 100 fichas y tu oponente apuesta 50.",
+      question: "¿Deberías hacer call?",
+      options: ["Sí, tengo odds suficientes", "No, las odds no lo justifican", "Sí, siempre persigo los flushes", "Depende de mi posición"],
+      correct: 0,
+      explanation: "Necesitas pagar 50 para ganar un bote total de 200 (bote actual 100 + apuesta 50 + tu call 50). Tus pot odds son 50/200 = 25%. Con 9 outs, tu probabilidad de completar en el river es ~18%. Pero sumando las implied odds (lo que ganarás si conectas), el call es rentable."
+    },
+    {
+      category: "Psicología", difficulty: "Novicio",
+      situation: "Acabas de perder un bote de 80 BB contra un jugador que hizo call con 7-2 offsuit en el river... y conectó su pareja.",
+      question: "¿Cuál es la mejor decisión inmediata?",
+      options: ["Subir de nivel para recuperar rápido", "Tomarte un descanso de 2 minutos antes de jugar la siguiente mano", "Ir all-in la siguiente mano para demostrar dominio", "Buscar a ese jugador y jugar cada bote contra él"],
+      correct: 1,
+      explanation: "Después de un bad beat fuerte, tu cerebro libera cortisol y adrenalina. Necesitas unos momentos para que tu corteza prefrontal retome el control. Un breve descanso es la diferencia entre jugar la siguiente mano con lógica o con rabia."
+    },
+    {
+      category: "Bankroll", difficulty: "Novicio",
+      situation: "Tienes un bankroll de $500 dedicado exclusivamente al póker. Juegas cash game online.",
+      question: "¿Cuál es el nivel máximo al que deberías sentarte?",
+      options: ["NL50 ($0.25/$0.50)", "NL25 ($0.10/$0.25)", "NL10 ($0.05/$0.10)", "NL100 ($0.50/$1.00)"],
+      correct: 2,
+      explanation: "Con $500, aplicando la regla de mínimo 20 buy-ins para cash game, puedes jugar hasta NL25 ($500 / 20 = $25 buy-in). Pero siendo conservador (30 buy-ins, recomendable para principiantes), NL10 es el nivel adecuado. La disciplina de bankroll management es lo que te mantiene en el juego."
+    },
+    {
+      category: "Pre-Flop", difficulty: "Acólito",
+      situation: "Estás en el botón con A♥ 5♥. Un jugador tight de middle position hizo un raise a 3 BB.",
+      question: "¿Cuál es la mejor acción?",
+      options: ["Fold", "Call", "3-bet a 9 BB", "All-in"],
+      correct: 2,
+      explanation: "A5 suited es una excelente mano para hacer 3-bet como bluff desde el botón. Tienes posición, la mano tiene buen equity cuando te pagan (suited + Ax), y si el villano foldea te llevas el bote. Si te hace 4-bet, foldeas limpio. Es una jugada de valor estratégico, no de valor de cartas."
+    },
+    {
+      category: "Torneos", difficulty: "Acólito",
+      situation: "Estás en un torneo MTT, quedan 15 jugadores y pagan 12. Tienes 8 BB en el cutoff. Todos foldean hasta ti. Recibes K♠ 9♦.",
+      question: "¿Qué haces?",
+      options: ["Fold y esperar una mano mejor", "Raise a 2 BB", "All-in", "Limp"],
+      correct: 2,
+      explanation: "Con 8 BB estás en territorio push-or-fold puro. K9o desde el cutoff con fold hasta ti es un push claro según las tablas de Nash. Si esperas una mano 'mejor', las ciegas te comerán vivo. Tu fold equity todavía existe con 8 BB — úsala antes de que desaparezca."
+    },
+    {
+      category: "Post-Flop", difficulty: "Sacerdote",
+      situation: "Tienes Q♠ Q♥ en un bote 3-beteado. El flop es A♣ 8♥ 3♦. Tu oponente (el que abrió originalmente) hace check.",
+      question: "¿Cuál es la mejor acción?",
+      options: ["Apostar grande (3/4 del bote) para proteger", "Check detrás para controlar el bote", "Apostar pequeño (1/3 del bote)", "All-in para máxima presión"],
+      correct: 1,
+      explanation: "Con QQ en un board con As en un bote 3-beteado, tu mano es ahora una mano de showdown mediocre, no una mano de valor. Tu oponente tiene muchos Ax en su rango de apertura. Hacer check te permite controlar el tamaño del bote y llegar al showdown sin arriesgar demasiado. Si apuestas, solo te pagan manos que te ganan."
+    },
+    {
+      category: "Conceptos", difficulty: "Novicio",
+      situation: "Tienes un open-ended straight draw (8 outs) en el flop. Quedan turn y river por salir.",
+      question: "¿Cuál es tu probabilidad aproximada de completar la escalera?",
+      options: ["16%", "24%", "32%", "40%"],
+      correct: 2,
+      explanation: "La regla del 4-2: con dos cartas por venir, multiplicas tus outs por 4. Con 8 outs: 8 × 4 = 32%. Esta es una aproximación muy útil que puedes calcular en medio segundo durante una mano."
+    },
+    {
+      category: "Pre-Flop", difficulty: "Sacerdote",
+      situation: "Estás en la ciega grande con 6♣ 4♣. Un jugador regular abre a 2.5 BB desde el cutoff y el botón hace call.",
+      question: "¿Cuál es la mejor acción?",
+      options: ["Fold — basura es basura", "Call — precio barato con dos jugadores", "Squeeze a 10 BB", "Call solo si estoy en racha"],
+      correct: 1,
+      explanation: "Estás cerrando la acción con un precio increíble (1.5 BB para ganar un bote de ~7.5 BB = 20% de equity necesaria). 64 suited tiene conectividad y posibilidad de flush. No vas a ganar a menudo, pero cuando conectes, ganarás botes grandes contra manos que nunca verán venir tu 6-4."
+    },
+    {
+      category: "Psicología", difficulty: "Acólito",
+      situation: "Llevas 3 horas jugando online y no has ganado un solo bote significativo. Tus cartas han sido mediocres y los flops no conectan. Tu bankroll está -15 BB.",
+      question: "¿Cuál es el tipo de tilt más probable que estás experimentando?",
+      options: ["Tilt de rabia", "Tilt de frustración", "Tilt de venganza", "Tilt de euforia"],
+      correct: 1,
+      explanation: "El tilt de frustración es el más peligroso porque es silencioso. No hay un momento explosivo — simplemente empiezas a aflojar tus estándares, a jugar manos marginales, a hacer calls dudosos. Es la muerte lenta del bankroll."
+    },
+    {
+      category: "Post-Flop", difficulty: "Acólito",
+      situation: "Tienes 8♠ 7♠ y el board es 6♠ 5♦ 2♠ en el flop. Tienes open-ended straight draw + flush draw (15 outs). Tu oponente apuesta el bote.",
+      question: "¿Cuál es la mejor acción?",
+      options: ["Fold — demasiado arriesgado", "Call", "Raise all-in", "Call y rezar"],
+      correct: 2,
+      explanation: "Con 15 outs (~54% de equity con dos cartas por venir), eres FAVORITO contra casi cualquier mano hecha. Ir all-in es correcto porque: (1) tienes más del 50% de equity, (2) tienes fold equity adicional si el villano foldea, y (3) maximizas tu expectativa. Este es un semi-bluff con las matemáticas de tu lado."
+    },
+    {
+      category: "Conceptos", difficulty: "Sacerdote",
+      situation: "Estás en el river. El bote tiene 200 fichas. Tu oponente apuesta 100 fichas. Crees que tiene un bluff el 40% de las veces.",
+      question: "¿Es un call rentable?",
+      options: ["Sí, es rentable", "No, necesito que bluffee más del 50%", "No hay forma de saberlo", "Solo si tengo top pair o mejor"],
+      correct: 0,
+      explanation: "Pagas 100 para ganar 400 (bote 200 + su apuesta 100 + tu call 100). Tus pot odds son 100/400 = 25%. Si ganas el 40% de las veces, es un call claramente rentable. Solo necesitabas ganar 25% de las veces, y estimas que ganas 40%. Eso es +EV."
+    },
+    {
+      category: "Torneos", difficulty: "Sacerdote",
+      situation: "Mesa final de un torneo. Quedan 4 jugadores. Tú eres el segundo stack. El chip leader abre desde el botón. Tú estás en la ciega grande con J♠ J♣ y 25 BB.",
+      question: "¿Cuál es la mejor acción?",
+      options: ["Flat call para ver un flop", "3-bet a 7 BB", "All-in", "Fold — ICM dice que no arriesgue"],
+      correct: 2,
+      explanation: "Con JJ y 25 BB en la ciega grande contra un open del chip leader (que abre amplio desde el botón), ir all-in es la jugada correcta. JJ es demasiado fuerte para foldear y flat-callear out of position contra el chip leader es receta para desastres post-flop. 3-bet/fold con JJ desperdicia equity. Push y que las cartas hablen."
+    },
+    {
+      category: "Pre-Flop", difficulty: "Obispo",
+      situation: "Partida de cash game 6-max online. Estás en el small blind con A♠ A♣. UTG (jugador tight) abre a 3 BB, el botón hace 3-bet a 9 BB.",
+      question: "¿Cuál es la mejor acción?",
+      options: ["Call y atrapar en el flop", "4-bet a 22 BB", "All-in (100 BB)", "4-bet a 28 BB"],
+      correct: 1,
+      explanation: "4-bet a 22 BB es óptimo. Call con AA es demasiado pasivo y te deja jugando un bote multiway out of position. All-in de 100 BB espanta a todo el mundo. 4-bet a ~2.5x la 3-bet mantiene a los villanos en el bote con manos peores (KK, QQ, AK) y construye un bote grande donde eres un favorito masivo."
+    },
+    {
+      category: "Post-Flop", difficulty: "Obispo",
+      situation: "Tienes A♦ K♦ en un bote single-raised. Board: K♠ T♥ 7♦ 4♦ (turn). Tu oponente (que pagó tu raise pre-flop) hace check-raise a tu c-bet del turn.",
+      question: "¿Cuál es la mejor acción?",
+      options: ["Fold — el check-raise es muy fuerte", "Call", "Re-raise all-in", "Fold si es un jugador tight, call si es loose"],
+      correct: 1,
+      explanation: "Tienes top pair top kicker + flush draw de nueces (9 outs adicionales para el mejor flush posible). Tu mano es demasiado fuerte para foldear y demasiado vulnerable para subir (te re-suben y pierdes contra sets y dos pares). Call es perfecto: mantienes a todas sus bluffs en el bote, controlas el tamaño, y tienes outs de redención si estás detrás."
+    },
+    {
+      category: "Psicología", difficulty: "Sacerdote",
+      situation: "Estás jugando en un nivel donde ganas consistentemente (winrate positivo confirmado en 50.000+ manos). Un amigo te dice que deberías subir de nivel porque 'ya eres demasiado bueno para NL25'.",
+      question: "¿Cuál es la decisión correcta?",
+      options: ["Subir inmediatamente — tu amigo tiene razón", "Subir solo si tienes el bankroll para el siguiente nivel", "Quedarte porque ganar es ganar", "Subir y si pierdes, volver"],
+      correct: 1,
+      explanation: "El único criterio para subir de nivel es el bankroll, no la opinión de otros ni tu ego. Si tienes los buy-ins necesarios para el siguiente nivel (mínimo 20 para cash), sube. Si no, sigue acumulando en tu nivel actual. La paciencia es la virtud más rentable del póker."
+    },
+    {
+      category: "Torneos", difficulty: "Obispo",
+      situation: "Torneo MTT, quedan 20 jugadores (pagan 18). Tienes 30 BB. Un short stack de 5 BB va all-in desde UTG. Tú estás en middle position con A♠ Q♦.",
+      question: "¿Cuál es la mejor acción?",
+      options: ["Call — AQ domina su rango", "Fold — ICM pressure es enorme", "Re-raise all-in para aislar", "Call solo si nadie más entra"],
+      correct: 2,
+      explanation: "Re-raise all-in para aislar es la jugada correcta. AQo es muy fuerte contra el rango de push de un short stack de 5 BB. Tu re-raise all-in aísla al short stack y evita que otros jugadores entren al bote con posición sobre ti. Sí, estás cerca de la burbuja, pero con 30 BB tu ICM pressure es mínima — los medios son los que deben preocuparse, no tú."
+    },
+    {
+      category: "Conceptos", difficulty: "Obispo",
+      situation: "Estás en el river con un bluff. El bote tiene 300 fichas. Quieres saber el tamaño mínimo de apuesta que necesita funcionar al menos 40% de las veces para ser rentable.",
+      question: "¿Cuál es el tamaño correcto?",
+      options: ["100 fichas (1/3 del bote)", "150 fichas (1/2 del bote)", "200 fichas (2/3 del bote)", "300 fichas (bote completo)"],
+      correct: 2,
+      explanation: "Para un bluff, necesitas que el tamaño de apuesta te dé la fold equity necesaria. Con una apuesta de 200 en un bote de 300, arriesgas 200 para ganar 300. Necesitas que funcione 200/(300+200) = 40% de las veces. Si apuestas menos, necesitas menos fold equity pero obtienes menos folds. Si apuestas más, necesitas más folds. 2/3 del bote = 40% breakeven."
+    },
+    {
+      category: "Filosofía", difficulty: "Sacerdote",
+      situation: "Llevas un mes estudiando póker intensivamente. Has leído artículos, visto streams, y usado simuladores. Pero tus resultados en mesa no han mejorado significativamente.",
+      question: "¿Cuál es la explicación más probable?",
+      options: ["El póker es suerte y el estudio no sirve", "Un mes no es suficiente muestra para ver resultados", "Necesitas un coach privado obligatoriamente", "Deberías dejar el póker"],
+      correct: 1,
+      explanation: "La varianza a corto plazo enmascara la mejora real. En póker, necesitas al menos 50.000-100.000 manos para que tus resultados reflejen tu habilidad real. Un mes puede ser una muestra de 10.000 manos — demasiado poco para sacar conclusiones. Sigue estudiando y jugando. Los resultados llegarán."
+    },
+  ];
+
+  // ╔══════════════════════════════════════════════════════════╗
+  // ║  RANGOS                                                  ║
+  // ╚══════════════════════════════════════════════════════════╝
+
+  const RANKS = [
+    {
+      min: 0, max: 5, icon: "😈", title: "Hereje del Green Felt",
+      color: "#F87171", bg: "rgba(248,113,113,0.12)", border: "rgba(248,113,113,0.3)",
+      comment: "Hijo mío... esto ha sido una masacre teológica. Tus decisiones en la mesa harían llorar a un dealer. Pero no desesperes: todo obispo fue primero un hereje que decidió estudiar. Tu camino de redención empieza en nuestra sección de Estrategia."
+    },
+    {
+      min: 6, max: 10, icon: "🕯️", title: "Novicio Errante",
+      color: "#FBBF24", bg: "rgba(251,191,36,0.12)", border: "rgba(251,191,36,0.3)",
+      comment: "Sabes lo básico, pero tus fundamentos tienen más agujeros que un queso suizo sagrado. Conoces las reglas pero no dominas los conceptos. La buena noticia: con estudio y disciplina, el salto al siguiente nivel es más corto de lo que crees."
+    },
+    {
+      min: 11, max: 14, icon: "📿", title: "Acólito Devoto",
+      color: "#D4A847", bg: "rgba(212,168,71,0.12)", border: "rgba(212,168,71,0.3)",
+      comment: "Nada mal, feligrés. Tienes los conceptos fundamentales claros y tomas decisiones decentes la mayoría del tiempo. Tu debilidad está en las situaciones avanzadas — esas donde la diferencia entre un buen jugador y un gran jugador se mide en matices."
+    },
+    {
+      min: 15, max: 17, icon: "⛪", title: "Sacerdote del Felt",
+      color: "#7C6FC4", bg: "rgba(124,111,196,0.12)", border: "rgba(124,111,196,0.3)",
+      comment: "Impresionante. Tu conocimiento es sólido y tus decisiones son consistentemente buenas. Entiendes pot odds, ICM, posición y psicología. Los pocos errores que cometes son en situaciones de élite donde incluso los profesionales dudan. Sigue así."
+    },
+    {
+      min: 18, max: 20, icon: "👑", title: "Obispo del Green Felt",
+      color: "#E8C96A", bg: "rgba(232,201,106,0.15)", border: "rgba(232,201,106,0.35)",
+      comment: "Has alcanzado la iluminación estratégica. Tu comprensión del póker es profunda, tus decisiones son precisas, y tu mentalidad es la de un profesional. El Clérigo se inclina ante ti. Ahora ve a las mesas y demuestra que este quiz no mintió."
+    },
+  ];
+
+  // ╔══════════════════════════════════════════════════════════╗
+  // ║  STATE                                                   ║
+  // ╚══════════════════════════════════════════════════════════╝
+
+  let currentQuestion = 0;
+  let score = 0;
+  let answered = false;
+
+  // ╔══════════════════════════════════════════════════════════╗
+  // ║  DOM REFS                                                ║
+  // ╚══════════════════════════════════════════════════════════╝
+
+  const introEl    = document.getElementById('quizIntro');
+  const questionEl = document.getElementById('quizQuestion');
+  const resultEl   = document.getElementById('quizResult');
+  const startBtn   = document.getElementById('startQuiz');
+  const retryBtn   = document.getElementById('retryQuiz');
+  const nextBtn    = document.getElementById('qNext');
+
+  // ╔══════════════════════════════════════════════════════════╗
+  // ║  FUNCTIONS                                               ║
+  // ╚══════════════════════════════════════════════════════════╝
+
+  function showScreen(screen) {
+    introEl.classList.add('hidden');
+    questionEl.classList.add('hidden');
+    resultEl.classList.add('hidden');
+    screen.classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function renderQuestion() {
+    const q = QUESTIONS[currentQuestion];
+    answered = false;
+
+    document.getElementById('qNum').textContent = currentQuestion + 1;
+    document.getElementById('qVirtues').textContent = score;
+    document.getElementById('qSins').textContent = currentQuestion - score;
+    document.getElementById('qProgress').style.width = ((currentQuestion + 1) / QUESTIONS.length * 100) + '%';
+    document.getElementById('qCategory').textContent = q.category;
+    document.getElementById('qDifficulty').textContent = q.difficulty;
+    document.getElementById('qSituation').textContent = q.situation;
+    document.getElementById('qText').textContent = q.question;
+    document.getElementById('qExplanation').classList.add('hidden');
+    document.getElementById('qNextWrap').classList.add('hidden');
+
+    const optionsEl = document.getElementById('qOptions');
+    optionsEl.innerHTML = '';
+
+    q.options.forEach(function(opt, i) {
+      const btn = document.createElement('button');
+      btn.className = 'quiz-option';
+      btn.textContent = opt;
+      btn.addEventListener('click', function() { selectAnswer(i); });
+      optionsEl.appendChild(btn);
+    });
+
+    // Re-trigger animation
+    var card = document.getElementById('qCard');
+    card.classList.remove('slide-in');
+    void card.offsetWidth;
+    card.classList.add('slide-in');
+  }
+
+  function selectAnswer(index) {
+    if (answered) return;
+    answered = true;
+
+    const q = QUESTIONS[currentQuestion];
+    const options = document.querySelectorAll('.quiz-option');
+
+    options.forEach(function(opt, i) {
+      opt.classList.add('locked');
+      if (i === q.correct) {
+        opt.classList.add('correct');
+        opt.textContent = '✓ ' + opt.textContent;
+      } else if (i === index && index !== q.correct) {
+        opt.classList.add('wrong');
+        opt.textContent = '✗ ' + opt.textContent;
+      }
+    });
+
+    if (index === q.correct) {
+      score++;
+    }
+
+    // Show explanation
+    var expEl = document.getElementById('qExplanation');
+    expEl.innerHTML = '<strong>' + (index === q.correct ? '✓ Virtud' : '✗ Pecado') + ':</strong> ' + q.explanation;
+    expEl.classList.remove('hidden');
+
+    // Show next button
+    var nextWrap = document.getElementById('qNextWrap');
+    nextWrap.classList.remove('hidden');
+
+    if (currentQuestion === QUESTIONS.length - 1) {
+      document.getElementById('qNext').textContent = 'Ver Mi Veredicto →';
+    }
+
+    // Update counters
+    document.getElementById('qVirtues').textContent = score;
+    document.getElementById('qSins').textContent = (currentQuestion + 1) - score;
+  }
+
+  function nextQuestion() {
+    currentQuestion++;
+    if (currentQuestion >= QUESTIONS.length) {
+      showResults();
+    } else {
+      renderQuestion();
+    }
+  }
+
+  function showResults() {
+    showScreen(resultEl);
+
+    var rank = null;
+    for (var i = 0; i < RANKS.length; i++) {
+      if (score >= RANKS[i].min && score <= RANKS[i].max) {
+        rank = RANKS[i];
+        break;
+      }
+    }
+
+    document.getElementById('rIcon').textContent = rank.icon;
+    document.getElementById('rTitle').textContent = rank.title;
+    document.getElementById('rScore').textContent = score;
+    document.getElementById('rVirtues').textContent = score;
+    document.getElementById('rSins').textContent = 20 - score;
+    document.getElementById('rBar').style.width = (score / 20 * 100) + '%';
+    document.getElementById('rComment').textContent = rank.comment;
+
+    var badge = document.getElementById('rBadge');
+    badge.textContent = rank.icon + ' ' + rank.title;
+    badge.style.background = rank.bg;
+    badge.style.color = rank.color;
+    badge.style.border = '1px solid ' + rank.border;
+
+    // Twitter share link
+    var tweetText = rank.icon + ' Soy "' + rank.title + '" en el Quiz del Pecador de @ClerigoPoker — ' + score + '/20 respuestas correctas. ¿Te atreves a superarme?';
+    var tweetUrl = 'https://clerigopoker.com/herramientas/quiz-del-pecador';
+    var shareLink = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweetText) + '&url=' + encodeURIComponent(tweetUrl);
+    document.getElementById('shareTwitter').href = shareLink;
+  }
+
+  function resetQuiz() {
+    currentQuestion = 0;
+    score = 0;
+    answered = false;
+    showScreen(questionEl);
+    renderQuestion();
+  }
+
+  // ╔══════════════════════════════════════════════════════════╗
+  // ║  EVENT LISTENERS                                         ║
+  // ╚══════════════════════════════════════════════════════════╝
+
+  startBtn.addEventListener('click', function() {
+    showScreen(questionEl);
+    renderQuestion();
+  });
+
+  nextBtn.addEventListener('click', nextQuestion);
+  retryBtn.addEventListener('click', resetQuiz);
+
+})();
+</script>
+
+</BaseLayout>
