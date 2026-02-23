@@ -1,0 +1,141 @@
+---
+/**
+ * DailyScripture.astro — Las Escrituras Diarias del Clérigo
+ * Muestra un versículo/tip diferente cada día del año.
+ * Se selecciona por el día del año (1-365) → siempre el mismo tip en el mismo día.
+ */
+
+const scriptures = [
+  // ── ESTRATEGIA PRE-FLOP ──
+  { text: "Foldear no es cobardía. Foldear es sabiduría disfrazada de paciencia. Los botes que no pierdes son tan valiosos como los que ganas.", category: "Estrategia", icon: "♠" },
+  { text: "Si no sabes por qué estás entrando a un bote, la respuesta es que no deberías estar entrando.", category: "Estrategia", icon: "♠" },
+  { text: "Posición es poder. El botón no es solo un disco de plástico — es la mejor arma que existe en el póker.", category: "Estrategia", icon: "♠" },
+  { text: "Un raise desde UTG dice 'tengo una mano fuerte'. Un raise desde el botón dice 'tengo posición, y eso es suficiente'.", category: "Estrategia", icon: "♠" },
+  { text: "No defiendas tu ciega grande por orgullo. Defiéndela cuando las matemáticas lo justifiquen. El ego no tiene pot odds.", category: "Estrategia", icon: "♠" },
+  { text: "Suited no es sinónimo de jugable. K2 suited sigue siendo basura. Basura con el mismo palo, pero basura.", category: "Estrategia", icon: "♠" },
+  { text: "El limp es la oración del cobarde. Si tu mano merece ser jugada, merece ser raiseada.", category: "Estrategia", icon: "♠" },
+  { text: "Tight is right en los microlímites. No necesitas ser creativo cuando tus oponentes se eliminan solos.", category: "Estrategia", icon: "♠" },
+  { text: "Cada órbita que no juegas una mano es una inversión en información. Estás aprendiendo cómo juegan tus rivales gratis.", category: "Estrategia", icon: "♠" },
+  { text: "3-betea más de lo que crees necesario. La agresión controlada es la diferencia entre pagar la cena de otros y que te la paguen a ti.", category: "Estrategia", icon: "♠" },
+
+  // ── ESTRATEGIA POST-FLOP ──
+  { text: "Un c-bet sin propósito es peor que un check. Apuesta cuando tengas una razón: valor, protección, o fold equity.", category: "Estrategia", icon: "♠" },
+  { text: "El board no miente. Si tiene tres cartas conectadas del mismo palo y tú tienes top pair, estás en problemas. Acéptalo.", category: "Estrategia", icon: "♠" },
+  { text: "Antes de apostar, pregúntate: ¿qué manos peores me pagan? Si la respuesta es ninguna, probablemente es un check.", category: "Estrategia", icon: "♠" },
+  { text: "Pot control no es debilidad. A veces el movimiento más fuerte es mantener el bote pequeño con una mano vulnerable.", category: "Estrategia", icon: "♠" },
+  { text: "No apuestes en seco porque sí. Un board K-7-2 rainbow no necesita una apuesta de tres cuartos del bote. Un tercio hace el mismo trabajo.", category: "Estrategia", icon: "♠" },
+  { text: "El check-raise es la herramienta más infrautilizada del póker. Úsala con más frecuencia y verás cómo cambian las dinámicas.", category: "Estrategia", icon: "♠" },
+  { text: "Si tu oponente apuesta grande en un board mojado, respeta su historia. No todo es un bluff.", category: "Estrategia", icon: "♠" },
+  { text: "El river es donde se gana y se pierde el dinero de verdad. Cada decisión en el river vale diez decisiones pre-flop.", category: "Estrategia", icon: "♠" },
+  { text: "Thin value bet: apostar una mano que solo gana ligeramente más del 50% de las veces. Los grandes jugadores viven de esto.", category: "Estrategia", icon: "♠" },
+  { text: "No blufees al calling station. Es como intentar enseñar filosofía a una piedra. Técnicamente posible, pero profundamente inútil.", category: "Estrategia", icon: "♠" },
+
+  // ── TORNEOS ──
+  { text: "En torneos, tus fichas valen más de lo que piensas al principio y menos de lo que piensas al final. Actúa en consecuencia.", category: "Torneos", icon: "🏆" },
+  { text: "La burbuja no es el momento de ser héroe. Es el momento de dejar que los stacks medios se destruyan entre ellos.", category: "Torneos", icon: "🏆" },
+  { text: "Con 10 big blinds o menos, tu mundo se reduce a dos opciones: all-in o fold. Cualquier otra cosa es un error.", category: "Torneos", icon: "🏆" },
+  { text: "No protejas tu stack como si fuera tu hijo. En torneos, las fichas que no arriesgas son fichas que la estructura de ciegas te robará igual.", category: "Torneos", icon: "🏆" },
+  { text: "ICM no es una fórmula misteriosa. Es sentido común: cuando estás cerca de un salto de premio, cada chip perdido duele más que cada chip ganado.", category: "Torneos", icon: "🏆" },
+  { text: "En la mesa final, olvida cómo llegaste. Lo que importa es cómo juegas las próximas 50 manos, no las 5000 anteriores.", category: "Torneos", icon: "🏆" },
+  { text: "El ante cambia todo. Cuando hay antes en juego, robar las ciegas es un 30% más rentable. Ajusta tu rango.", category: "Torneos", icon: "🏆" },
+  { text: "Respeta al short stack que va all-in desde early position. Si ha esperado esa mano, probablemente tiene algo decente.", category: "Torneos", icon: "🏆" },
+  { text: "Chip leader no significa mejor jugador. Significa más margen de error. No confundas suerte acumulada con habilidad.", category: "Torneos", icon: "🏆" },
+  { text: "En un torneo turbo, la paciencia es un lujo que no puedes permitirte. Sé agresivo antes de que las ciegas te devoren.", category: "Torneos", icon: "🏆" },
+
+  // ── PSICOLOGÍA / TILT ──
+  { text: "El tilt no empieza con un grito. Empieza con un suspiro. Aprende a reconocer el suspiro.", category: "Psicología", icon: "🧠" },
+  { text: "Después de un bad beat, tienes 60 segundos para tomar la peor decisión de tu sesión. Usa esos 60 segundos para no hacer nada.", category: "Psicología", icon: "🧠" },
+  { text: "Ganar no te hace buen jugador. Perder no te hace malo. Lo que te define es cómo tomas decisiones cuando duele.", category: "Psicología", icon: "🧠" },
+  { text: "No analices una mano dolorosa en caliente. Anota el número, cierra el replayer, y revísala mañana. Tu yo del futuro te lo agradecerá.", category: "Psicología", icon: "🧠" },
+  { text: "El revenge tilt es el más caro. Cuando quieres destruir a un jugador específico, ya dejaste de jugar póker y empezaste a jugar ego.", category: "Psicología", icon: "🧠" },
+  { text: "Si estás jugando para 'recuperar lo perdido', ya estás en tilt. Las fichas que perdiste ya no son tuyas. Nunca lo fueron.", category: "Psicología", icon: "🧠" },
+  { text: "La euforia es tilt disfrazado de fiesta. Cuando te sientes invencible, es exactamente cuando eres más vulnerable.", category: "Psicología", icon: "🧠" },
+  { text: "Tu stop-loss no debería ser un número de fichas. Debería ser un nivel de frustración. Cuando lo alcances, cierra la sesión.", category: "Psicología", icon: "🧠" },
+  { text: "El mejor jugador de tu mesa puede estar perdiendo. El peor puede estar ganando. El corto plazo miente. Las matemáticas no.", category: "Psicología", icon: "🧠" },
+  { text: "No compares tu sesión con la de nadie. Tu único benchmark eres tú mismo hace seis meses.", category: "Psicología", icon: "🧠" },
+
+  // ── BANKROLL ──
+  { text: "Si el dinero que estás jugando te preocupa, estás jugando demasiado alto. Baja de nivel. Tu sueño vale más que tu ego.", category: "Bankroll", icon: "💰" },
+  { text: "El bankroll management es aburrido. También lo es cepillarte los dientes. Pero si no lo haces, las consecuencias son dolorosas.", category: "Bankroll", icon: "💰" },
+  { text: "20 buy-ins para cash, 50 para torneos. No son sugerencias. Son mandamientos.", category: "Bankroll", icon: "💰" },
+  { text: "Bajar de nivel no es un fracaso. Es la decisión más inteligente y más difícil que tomarás como jugador.", category: "Bankroll", icon: "💰" },
+  { text: "La varianza puede hacer que pierdas durante 30.000 manos jugando bien. Sin bankroll, no sobrevives. Con bankroll, es solo un mal mes.", category: "Bankroll", icon: "💰" },
+  { text: "Shot-taking responsable: 3 buy-ins del nivel superior. Si los pierdes, vuelves inmediatamente. Sin negociar contigo mismo.", category: "Bankroll", icon: "💰" },
+  { text: "Tu bankroll NO es tu cuenta bancaria. Es dinero separado, dedicado exclusivamente al póker. Si no puedes separarlo, no estás listo.", category: "Bankroll", icon: "💰" },
+  { text: "La disciplina financiera es más importante que el talento. He visto a jugadores brillantes quebrar y a jugadores mediocres vivir de esto.", category: "Bankroll", icon: "💰" },
+  { text: "No subas de nivel después de una racha ganadora. Sube cuando tu bankroll lo permita. Las rachas terminan. Las reglas no.", category: "Bankroll", icon: "💰" },
+  { text: "El dinero que no pierdes es tan valioso como el que ganas. Protege tu bankroll como protegerías un templo.", category: "Bankroll", icon: "💰" },
+
+  // ── CONCEPTOS ──
+  { text: "Pot odds: la cantidad que pagas dividida por lo que puedes ganar. Si tus odds de completar son mejores, paga. Si no, foldea. Así de simple.", category: "Conceptos", icon: "📖" },
+  { text: "Equity no es dinero. Es tu parte justa del bote basada en probabilidad. Puedes tener 80% de equity y perder la mano. Bienvenido al póker.", category: "Conceptos", icon: "📖" },
+  { text: "Expected Value: si una decisión gana dinero a largo plazo, es +EV. Si pierde, es -EV. Tu trabajo es tomar decisiones +EV. Siempre.", category: "Conceptos", icon: "📖" },
+  { text: "Fold equity: el porcentaje de veces que tu apuesta hace que tu oponente se retire. Sin ella, tus bluffs son donaciones.", category: "Conceptos", icon: "📖" },
+  { text: "La regla del 2-4: multiplica tus outs por 4 en el flop, por 2 en el turn. Eso es tu probabilidad aproximada de completar.", category: "Conceptos", icon: "📖" },
+  { text: "Implied odds: lo que ganarás en calles futuras si completas tu draw. Solo cuentan si tu oponente tiene stack para pagarte.", category: "Conceptos", icon: "📖" },
+  { text: "GTO no es jugar como un robot. Es tener una estrategia base equilibrada para que nadie pueda explotarte. Luego explotas tú a ellos.", category: "Conceptos", icon: "📖" },
+  { text: "Blockers: si tienes el As de corazones, hay menos combinaciones de flush posibles para tu oponente. Úsalo a tu favor.", category: "Conceptos", icon: "📖" },
+  { text: "Range advantage: cuando el board favorece más a tu rango que al de tu oponente, puedes apostar con más frecuencia. Es matemática, no agresión.", category: "Conceptos", icon: "📖" },
+  { text: "Reverse implied odds: lo opuesto a implied odds. Cuando completas tu draw pero pierdes ante un draw mejor. Segundo mejor flush = segundo mejor desastre.", category: "Conceptos", icon: "📖" },
+
+  // ── FILOSOFÍA DEL CLÉRIGO ──
+  { text: "El póker no te enseña a ganar dinero. Te enseña a tomar decisiones bajo incertidumbre. Lo primero es un efecto secundario de lo segundo.", category: "Filosofía", icon: "✝" },
+  { text: "No juegas contra las cartas. Juegas contra personas que tienen cartas. La diferencia es abismal.", category: "Filosofía", icon: "✝" },
+  { text: "El mejor momento para estudiar póker es cuando no tienes ganas. Cualquiera estudia cuando está motivado. La disciplina es lo que queda cuando la motivación se va.", category: "Filosofía", icon: "✝" },
+  { text: "Un jugador que nunca pierde es un jugador que no juega lo suficiente. Las pérdidas son el precio de la educación.", category: "Filosofía", icon: "✝" },
+  { text: "Si todos en la mesa juegan igual, nadie tiene ventaja. Tu edge viene de hacer lo que los demás no están dispuestos a hacer.", category: "Filosofía", icon: "✝" },
+  { text: "El póker es el único juego donde puedes hacer todo bien y perder, y todo mal y ganar. A corto plazo. A largo plazo, las matemáticas cobran.", category: "Filosofía", icon: "✝" },
+  { text: "Estudia una hora. Juega cuatro. Revisa una hora. Ese ratio es el que separa a los que mejoran de los que solo acumulan manos.", category: "Filosofía", icon: "✝" },
+  { text: "No existe el 'me la debía'. El universo no te debe nada. Cada mano es independiente. Cada decisión es nueva.", category: "Filosofía", icon: "✝" },
+  { text: "Si crees que ya sabes suficiente póker, es exactamente cuando más necesitas estudiar.", category: "Filosofía", icon: "✝" },
+  { text: "El póker te dará todo lo que le pidas, pero te cobrará en paciencia, disciplina y humildad. Paga el precio o cambia de juego.", category: "Filosofía", icon: "✝" },
+];
+
+// Seleccionar escritura del día basada en el día del año
+const now = new Date();
+const start = new Date(now.getFullYear(), 0, 0);
+const diff = now.getTime() - start.getTime();
+const dayOfYear = Math.floor(diff / (1000 * 60 * 60 * 24));
+const todayIndex = dayOfYear % scriptures.length;
+const today = scriptures[todayIndex];
+
+// Formatear fecha
+const dateStr = now.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+---
+
+<section class="relative mx-auto max-w-3xl px-4 py-12">
+  <!-- Subtle glow -->
+  <div class="pointer-events-none absolute left-1/2 top-1/2 h-[250px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-8" style="background: radial-gradient(circle, rgba(212,168,71,0.3) 0%, transparent 70%); filter: blur(80px);" aria-hidden="true"></div>
+
+  <div class="relative text-center">
+    <div class="divider-sacred mb-8">
+      <span class="font-display text-xs font-bold uppercase tracking-[0.25em] text-gold/70">
+        Escritura del Día
+      </span>
+    </div>
+
+    <!-- Scripture card -->
+    <div class="mx-auto max-w-2xl rounded-2xl p-8 sm:p-10" style="background: linear-gradient(135deg, rgba(14,14,22,0.6) 0%, rgba(8,8,13,0.8) 100%); border: 1px solid rgba(212,168,71,0.1);">
+      <!-- Icon + Category -->
+      <div class="mb-5 flex items-center justify-center gap-2">
+        <span class="text-xl">{today.icon}</span>
+        <span class="text-xs font-bold uppercase tracking-[0.2em] text-gold/50">{today.category}</span>
+      </div>
+
+      <!-- Quote -->
+      <blockquote class="font-display text-lg font-medium leading-relaxed text-scripture sm:text-xl">
+        "{today.text}"
+      </blockquote>
+
+      <!-- Attribution -->
+      <div class="mt-6 flex items-center justify-center gap-2">
+        <div class="h-px w-8" style="background: rgba(212,168,71,0.2);"></div>
+        <span class="text-xs font-semibold text-gold/40">El Clérigo</span>
+        <div class="h-px w-8" style="background: rgba(212,168,71,0.2);"></div>
+      </div>
+
+      <!-- Date -->
+      <p class="mt-3 text-xs capitalize text-whisper/40">{dateStr}</p>
+    </div>
+  </div>
+</section>
