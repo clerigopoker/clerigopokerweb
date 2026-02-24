@@ -1,0 +1,17 @@
+# ============================================
+# CLÉRIGO POKER — robots.txt
+# "Hasta los bots necesitan permiso del párroco"
+# ============================================
+
+User-agent: *
+Allow: /
+Disallow: /404
+Disallow: /politica-de-privacidad
+Disallow: /politica-de-cookies
+Disallow: /terminos-y-condiciones
+
+# Sitemap
+Sitemap: https://clerigopoker.com/sitemap-index.xml
+
+# Crawl-delay sugerido (no obligatorio para Google)
+# Crawl-delay: 1

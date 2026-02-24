@@ -1,0 +1,49 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+import ArticleCard from '@/components/ArticleCard.astro';
+
+const allPosts = await getCollection('psicologia', ({ data }) => !data.draft && data.category === 'tilt');
+const posts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<BaseLayout
+  title="Tilt en el Póker"
+  description="Guías sobre el tilt en póker: qué es, por qué ocurre, tipos de tilt y cómo controlarlo antes de que destruya tu bankroll y tu cordura."
+>
+  <section class="mx-auto max-w-4xl px-4 py-10 sm:px-6">
+    <Breadcrumb items={[
+      { name: 'Psicología', url: '/psicologia' },
+      { name: 'Tilt', url: '/psicologia/tilt' },
+    ]} />
+    <header class="mb-12">
+      <h1 class="font-display text-4xl font-bold text-scripture sm:text-5xl">
+        🧠 <span class="text-sacred">Tilt</span>
+      </h1>
+      <p class="mt-4 max-w-2xl text-lg text-psalm">
+        El demonio más antiguo del green felt. Aquí aprenderás a reconocerlo, enfrentarlo
+        y —con algo de disciplina— mantenerlo encadenado donde no pueda hacerte daño.
+      </p>
+    </header>
+    {posts.length > 0 ? (
+      <div class="grid gap-6 sm:grid-cols-2">
+        {posts.map((post) => (
+          <ArticleCard
+            title={post.data.title}
+            description={post.data.description}
+            href={`/psicologia/${post.id}`}
+            pubDate={post.data.pubDate}
+            tags={post.data.tags}
+            difficulty={post.data.difficulty}
+            image={post.data.image}
+          />
+        ))}
+      </div>
+    ) : (
+      <div class="card-altar text-center py-12">
+        <p class="text-psalm text-lg">🕯️ Los primeros sermones sobre el tilt están en camino...</p>
+      </div>
+    )}
+  </section>
+</BaseLayout>

@@ -1,0 +1,123 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+---
+
+<BaseLayout
+  title="Términos y Condiciones"
+  description="Términos y condiciones de uso de Clérigo Poker. Las reglas de la parroquia del green felt."
+  hideCTA={true}
+>
+  <article class="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+    <Breadcrumb items={[{ name: 'Términos y Condiciones', url: '/terminos-y-condiciones' }]} />
+
+    <header class="mb-10">
+      <h1 class="font-display text-3xl font-bold text-scripture sm:text-4xl">
+        Términos y Condiciones
+      </h1>
+      <p class="mt-3 text-sm text-whisper">Última actualización: 22 de febrero de 2026</p>
+    </header>
+
+    <div class="prose-clerigo">
+      <p>
+        Bienvenido a <strong>Clérigo Poker</strong> (clerigopoker.com). Al acceder y usar este sitio,
+        aceptas los siguientes términos. Si no estás de acuerdo, con todo respeto, hermano:
+        la puerta de la parroquia está abierta en ambas direcciones.
+      </p>
+
+      <h2>1. Naturaleza del contenido</h2>
+      <p>
+        Clérigo Poker es un sitio web de contenido informativo y educativo sobre póker.
+        Publicamos artículos sobre estrategia, psicología del juego y noticias de la industria.
+      </p>
+      <p>
+        <strong>El contenido de este sitio tiene fines informativos y de entretenimiento.</strong>
+        No constituye asesoramiento financiero, legal ni profesional de ningún tipo.
+        Las decisiones que tomes en las mesas de póker son tu responsabilidad.
+      </p>
+
+      <h2>2. Juego responsable</h2>
+      <p>
+        El póker es un juego que involucra dinero real y riesgo financiero.
+        <strong>Este sitio está dirigido exclusivamente a personas mayores de 18 años</strong>
+        (o la edad legal mínima en tu jurisdicción para participar en juegos de azar).
+      </p>
+      <p>
+        Si sientes que tienes un problema con el juego, te recomendamos buscar ayuda profesional.
+        Recursos disponibles:
+      </p>
+      <p>
+        <strong>Jugadores Anónimos:</strong> <a href="https://www.jugadoresanonimos.org" target="_blank" rel="noopener noreferrer">jugadoresanonimos.org</a><br>
+        <strong>FEJAR (España):</strong> <a href="https://fejar.org" target="_blank" rel="noopener noreferrer">fejar.org</a><br>
+        <strong>GamCare:</strong> <a href="https://www.gamcare.org.uk" target="_blank" rel="noopener noreferrer">gamcare.org.uk</a>
+      </p>
+
+      <h2>3. Enlaces de afiliado</h2>
+      <p>
+        Este sitio contiene enlaces de afiliado a plataformas de póker online, como WPT Global.
+        Cuando haces clic en estos enlaces y te registras o realizas una acción en la plataforma,
+        Clérigo Poker puede recibir una comisión sin coste adicional para ti.
+      </p>
+      <p>
+        <strong>Esta relación de afiliado no influye en nuestro contenido editorial.</strong>
+        Nuestras recomendaciones y análisis son independientes. Siempre indicamos
+        claramente cuándo un enlace es de afiliado.
+      </p>
+
+      <h2>4. Propiedad intelectual</h2>
+      <p>
+        Todo el contenido publicado en Clérigo Poker (textos, imágenes, diseños, código,
+        logotipos y marca) es propiedad de Clérigo Poker o de sus respectivos autores,
+        y está protegido por las leyes de propiedad intelectual.
+      </p>
+      <p>
+        Puedes compartir enlaces a nuestro contenido libremente. Puedes citar fragmentos
+        breves con atribución y enlace a la fuente. No puedes reproducir, distribuir o
+        modificar nuestro contenido sin autorización previa por escrito.
+      </p>
+
+      <h2>5. Limitación de responsabilidad</h2>
+      <p>
+        Clérigo Poker no garantiza que la información publicada sea completa, precisa
+        o actualizada en todo momento. El póker implica varianza y riesgo inherente.
+      </p>
+      <p>
+        <strong>No nos hacemos responsables de pérdidas económicas</strong> derivadas de la aplicación
+        de estrategias, conceptos o información encontrada en este sitio.
+        Cada jugador es responsable de sus propias decisiones.
+      </p>
+      <p>
+        Tampoco nos responsabilizamos de la disponibilidad, seguridad o prácticas de las
+        plataformas de terceros a las que enlazamos, incluyendo salas de póker online.
+      </p>
+
+      <h2>6. Disponibilidad del servicio</h2>
+      <p>
+        Nos esforzamos por mantener el sitio disponible 24/7, pero no garantizamos
+        un funcionamiento ininterrumpido. Podemos modificar, suspender o discontinuar
+        cualquier aspecto del sitio en cualquier momento sin previo aviso.
+      </p>
+
+      <h2>7. Modificaciones</h2>
+      <p>
+        Nos reservamos el derecho de modificar estos términos en cualquier momento.
+        Los cambios entran en vigor inmediatamente tras su publicación.
+        La fecha de "Última actualización" se actualiza con cada cambio.
+        El uso continuado del sitio tras una modificación implica la aceptación
+        de los nuevos términos.
+      </p>
+
+      <h2>8. Legislación aplicable</h2>
+      <p>
+        Estos términos se rigen por la legislación vigente. Cualquier disputa se resolverá
+        en los tribunales competentes.
+      </p>
+
+      <h2>9. Contacto</h2>
+      <p>
+        Para cualquier consulta sobre estos términos, escríbenos a
+        <strong>contacto@clerigopoker.com</strong>.
+      </p>
+    </div>
+  </article>
+</BaseLayout>

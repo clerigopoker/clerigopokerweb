@@ -1,0 +1,1150 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+---
+
+<BaseLayout
+  title="El Oráculo Push or Fold"
+  description="Calculadora gratuita de Push or Fold basada en Nash Equilibrium. Calcula si debes ir all-in según tu stack, posición y mano en torneos SNG y MTT."
+  ctaEyebrow="¿El Oráculo Te Dijo Push?"
+  ctaHeadline="Entonces necesitas una mesa donde empujar"
+  ctaBody="Las matemáticas no mienten. Si el Oráculo dice push, lo único que te falta es una mesa. WPT Global tiene torneos MTT y SNG desde $1 para que practiques sin vender el alma."
+  ctaCta="Encontrar un Torneo"
+>
+
+<section class="mx-auto max-w-5xl px-4 pt-10 pb-2 sm:px-6">
+  <Breadcrumb items={[
+    { name: 'Herramientas', url: '/herramientas' },
+    { name: 'El Oráculo Push or Fold', url: '/herramientas/calculadora-push-or-fold' },
+  ]} />
+  <header class="mb-4">
+    <p class="text-xs font-bold uppercase tracking-[0.2em]" style="color: rgba(212,168,71,0.7)">Herramienta Sagrada</p>
+    <h1 class="mt-3 font-display text-3xl font-bold sm:text-4xl" style="color: #E0E0E8;">
+      🎯 El Oráculo <span style="background: linear-gradient(135deg, #D4A847, #E8C96A); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Push or Fold</span>
+    </h1>
+    <p class="mt-3 max-w-2xl" style="color: #B0B0C0; font-size: 0.9375rem;">
+      Deja de adivinar. Deja de "tener un feeling". El Oráculo consulta las tablas sagradas de Nash
+      y te dice la verdad matemática. Sin piedad. Sin sentimientos. Solo números sagrados.
+    </p>
+  </header>
+</section>
+
+<style>
+
+        *, *::before, *::after { box-sizing: border-box; }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: #08080D;
+            background-image:
+                radial-gradient(ellipse at 20% 50%, rgba(212, 168, 71, 0.03) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(124, 111, 196, 0.03) 0%, transparent 60%);
+            min-height: 100vh;
+        }
+
+        /* ── Matrix Grid ── */
+        .matrix-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 8px;
+        }
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: 28px repeat(13, 1fr);
+            gap: 2.5px;
+            min-width: 520px;
+            max-width: 680px;
+            margin: 0 auto;
+        }
+        .matrix-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #9090A8;
+            user-select: none;
+            min-height: 28px;
+        }
+        .matrix-header.corner { color: transparent; }
+        .matrix-header.col-hdr { color: #D4A847; }
+        .matrix-header.row-hdr { color: #D4A847; }
+
+        /* ── Hand Cells ── */
+        .hand-cell {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.35s ease, transform 0.15s ease, box-shadow 0.15s ease, color 0.35s ease;
+            position: relative;
+            user-select: none;
+            min-width: 0;
+            min-height: 36px;
+            letter-spacing: -0.02em;
+        }
+        .hand-cell:hover {
+            transform: scale(1.18);
+            z-index: 10;
+        }
+
+        /* Fold states */
+        .hand-cell.fold.pair   { background: #1A1A2E; color: #4a5568; }
+        .hand-cell.fold.suited { background: #121220; color: #3b4963; }
+        .hand-cell.fold.offsuit{ background: #0B0B18; color: #2A2A40; }
+
+        .hand-cell.fold:hover {
+            box-shadow: 0 0 12px rgba(100,116,139,0.25);
+            background: #1E1E30 !important;
+            color: #9090A8 !important;
+        }
+
+        /* Push state */
+        .hand-cell.push {
+            color: #fff;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+        }
+        .hand-cell.push:hover {
+            box-shadow: 0 0 18px rgba(212,168,71,0.45), inset 0 0 12px rgba(255,255,255,0.08);
+        }
+
+        /* Selected cell */
+        .hand-cell.selected {
+            outline: 2.5px solid #facc15;
+            outline-offset: 1px;
+            z-index: 20;
+        }
+
+        /* ── Tooltip ── */
+        .cell-tooltip {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            bottom: calc(100% + 6px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1E1E30;
+            border: 1px solid #3A3A55;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 500;
+            white-space: nowrap;
+            z-index: 100;
+            transition: opacity 0.18s;
+            pointer-events: none;
+            color: #e2e8f0;
+        }
+        .cell-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 4px solid transparent;
+            border-top-color: #3A3A55;
+        }
+        .hand-cell:hover .cell-tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* ── Range Slider ── */
+        input[type="range"] {
+            -webkit-appearance: none; appearance: none;
+            width: 100%; height: 6px;
+            background: #1E1E30; border-radius: 3px;
+            outline: none; margin-top: 4px;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            width: 20px; height: 20px; border-radius: 50%;
+            background: linear-gradient(135deg, #D4A847, #B8912E);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(212,168,71,0.5), 0 2px 6px rgba(0,0,0,0.4);
+            border: 2px solid #9A7B28;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 20px; height: 20px; border-radius: 50%;
+            background: linear-gradient(135deg, #D4A847, #B8912E);
+            cursor: pointer; border: 2px solid #9A7B28;
+            box-shadow: 0 0 10px rgba(212,168,71,0.5);
+        }
+
+        /* ── Custom Scrollbar ── */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0E0E16; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: #2A2A40; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3A3A55; }
+
+        /* ── Animations ── */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .animate-in { animation: fadeInUp 0.4s ease-out both; }
+
+        @keyframes glow-pulse {
+            0%, 100% { box-shadow: 0 0 8px rgba(212,168,71,0.15); }
+            50%      { box-shadow: 0 0 20px rgba(212,168,71,0.35); }
+        }
+        .glow-border { animation: glow-pulse 2.5s ease-in-out infinite; }
+
+        .stat-value {
+            background: linear-gradient(90deg, #D4A847 0%, #E8C96A 25%, #D4A847 50%, #E8C96A 75%, #D4A847 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* ── Progress Bar ── */
+        .progress-track {
+            height: 10px; background: #1E1E30; border-radius: 5px; overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.4);
+        }
+        .progress-fill {
+            height: 100%; border-radius: 5px;
+            background: linear-gradient(90deg, #B8912E, #D4A847, #E8C96A);
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 10px rgba(212,168,71,0.3);
+        }
+
+        /* ── Select styling ── */
+        select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+        }
+
+        /* ── Action Badge Styles ── */
+        .action-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+        .action-badge.fold-to-me { background: rgba(212,168,71,0.15); color: #E8C96A; border: 1px solid rgba(212,168,71,0.25); }
+        .action-badge.limper     { background: rgba(234,179,8,0.15);  color: #fbbf24; border: 1px solid rgba(234,179,8,0.25); }
+        .action-badge.vs-raise   { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.25); }
+        .action-badge.vs-raise-call { background: rgba(168,85,247,0.15); color: #c084fc; border: 1px solid rgba(168,85,247,0.25); }
+
+        /* ── Responsive ── */
+        @media (max-width: 640px) {
+            .hand-cell {
+                font-size: 0.48rem;
+                min-height: 28px;
+                border-radius: 2px;
+            }
+            .matrix-grid {
+                gap: 1.5px;
+                min-width: 400px;
+                grid-template-columns: 22px repeat(13, 1fr);
+            }
+            .matrix-header { font-size: 0.55rem; min-height: 22px; }
+        }
+    
+</style>
+
+<main class="max-w-6xl mx-auto px-4 py-4 sm:py-6">
+
+
+    <!-- ── Controls + Stats ── -->
+    <div class="grid lg:grid-cols-5 gap-5 mb-6">
+
+        <!-- CONTROLS PANEL (left, 3 cols) -->
+        <div class="lg:col-span-3 rounded-2xl p-5 sm:p-6 border border-[#2A2A40]/60"
+             style="background: linear-gradient(135deg, #0f172a 0%, #111827 100%);">
+            <h2 class="text-sm font-bold text-[#E0E0E8] uppercase tracking-wider mb-4 flex items-center gap-2">
+                <svg class="w-4 h-4 text-[#D4A847]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+                </svg>
+                Tu Situación en la Mesa
+            </h2>
+
+            <div class="grid sm:grid-cols-2 gap-4">
+                <!-- Position -->
+                <div>
+                    <label for="position" class="block text-xs font-semibold text-[#B0B0C0] mb-1.5">Mi Posición</label>
+                    <select id="position"
+                            class="w-full appearance-none rounded-lg border border-[#2A2A40] bg-[#1E1E30]/80 text-white text-sm font-medium px-4 py-2.5 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 transition-colors cursor-pointer">
+                        <option value="UTG">🔴 UTG — Under The Gun</option>
+                        <option value="HJ">🟡 HJ — Hijack</option>
+                        <option value="CO">🟠 CO — Cutoff</option>
+                        <option value="BTN" selected>🟢 BTN — Button (Dealer)</option>
+                        <option value="SB">🔵 SB — Small Blind</option>
+                    </select>
+                </div>
+
+                <!-- Prior Action -->
+                <div>
+                    <label for="priorAction" class="block text-xs font-semibold text-[#B0B0C0] mb-1.5">
+                        Qué Pasó Antes de Ti
+                        
+                    </label>
+                    <select id="priorAction"
+                            class="w-full appearance-none rounded-lg border border-[#2A2A40] bg-[#1E1E30]/80 text-white text-sm font-medium px-4 py-2.5 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 transition-colors cursor-pointer">
+                        <option value="foldToMe">🟢 Fold to me — Todos pasan</option>
+                        <option value="limper1">🟡 1 Limper — Alguien hizo limp</option>
+                        <option value="vsRaise">🔴 Facing Raise — Alguien abrió</option>
+                        <option value="vsRaiseCaller">🟣 Raise + Caller — Open + call</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Stack (BB) -->
+            <div class="mt-4">
+                <label for="stack" class="block text-xs font-semibold text-[#B0B0C0] mb-1.5">
+                    Mi Stack <span class="text-[#8888A0]">(BB)</span>
+                </label>
+                <div class="flex items-center gap-3">
+                    <input type="range" id="stackSlider" min="1" max="40" value="10" class="flex-1">
+                    <div class="relative">
+                        <input type="number" id="stack" min="1" max="40" value="10"
+                               class="w-16 rounded-lg border border-[#2A2A40] bg-[#1E1E30]/80 text-white text-sm font-bold text-center py-2 focus:outline-none focus:border-emerald-500 transition-colors">
+                        <span class="absolute right-1.5 top-1/2 -translate-y-1/2 text-[0.6rem] text-[#8888A0] font-medium pointer-events-none">BB</span>
+                    </div>
+                </div>
+                <!-- Stack zone indicator -->
+                <div class="mt-1.5 flex items-center gap-1.5">
+                    <div id="stackZoneBar" class="flex-1 h-1.5 rounded-full overflow-hidden flex">
+                        <div class="bg-red-500 h-full" style="width:12.5%"></div>
+                        <div class="bg-orange-500 h-full" style="width:12.5%"></div>
+                        <div class="bg-yellow-500 h-full" style="width:25%"></div>
+                        <div class="bg-emerald-500 h-full" style="width:25%"></div>
+                        <div class="bg-cyan-500 h-full" style="width:25%"></div>
+                    </div>
+                    <span id="stackZoneLabel" class="text-[0.6rem] font-bold text-[#8888A0] w-20 text-right">Short</span>
+                </div>
+            </div>
+
+            <!-- Effective Stack Toggle -->
+            <div class="mt-4 pt-4 border-t border-[#2A2A40]/60">
+                <label class="flex items-center gap-3 cursor-pointer group">
+                    <div class="relative">
+                        <input type="checkbox" id="useEffective" class="sr-only peer">
+                        <div class="w-9 h-5 bg-slate-700 rounded-full peer-checked:bg-emerald-600 transition-colors"></div>
+                        <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-4 shadow"></div>
+                    </div>
+                    <span class="text-xs font-semibold text-[#B0B0C0] group-hover:text-[#E0E0E8] transition-colors">
+                        Ajustar por Stack Efectivo
+                    </span>
+                </label>
+                <div id="effectiveContainer" class="mt-3 hidden">
+                    <p class="text-[0.65rem] text-[#8888A0] mb-2">
+                        Si alguna ciega detrás de ti tiene menos fichas, introduce su stack aquí. Se usará el mínimo entre tu stack y el stack efectivo.
+                    </p>
+                    <div class="flex items-center gap-3">
+                        <input type="range" id="effectiveSlider" min="1" max="40" value="10" class="flex-1">
+                        <div class="relative">
+                            <input type="number" id="effectiveStack" min="1" max="40" value="10"
+                                   class="w-16 rounded-lg border border-[#2A2A40] bg-[#1E1E30]/80 text-white text-sm font-bold text-center py-2 focus:outline-none focus:border-emerald-500 transition-colors">
+                            <span class="absolute right-1.5 top-1/2 -translate-y-1/2 text-[0.6rem] text-[#8888A0] font-medium pointer-events-none">BB</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- STATS PANEL (right, 2 cols) -->
+        <div class="lg:col-span-2 rounded-2xl p-5 sm:p-6 border border-[#2A2A40]/60 flex flex-col"
+             style="background: linear-gradient(135deg, #0f172a 0%, #111827 100%);">
+            <h2 class="text-sm font-bold text-[#E0E0E8] uppercase tracking-wider mb-4 flex items-center gap-2">
+                <svg class="w-4 h-4 text-[#D4A847]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+                El Veredicto
+            </h2>
+
+            <!-- Action context badge -->
+            <div id="actionBadgeContainer" class="mb-3 flex items-center gap-2">
+                <span id="actionBadge" class="action-badge fold-to-me">🟢 Fold to me</span>
+                <span id="actionHint" class="text-[0.6rem] text-[#6A6A82] italic">Rango estándar push-or-fold</span>
+            </div>
+
+            <!-- Stat Cards -->
+            <div class="grid grid-cols-3 gap-3 mb-4">
+                <div class="rounded-lg p-3 text-center" style="background: #0d1525;">
+                    <p class="text-[0.6rem] text-[#8888A0] font-semibold uppercase tracking-wider mb-1">Rango</p>
+                    <p id="statPercent" class="text-lg font-extrabold stat-value">—</p>
+                </div>
+                <div class="rounded-lg p-3 text-center" style="background: #0d1525;">
+                    <p class="text-[0.6rem] text-[#8888A0] font-semibold uppercase tracking-wider mb-1">Combos</p>
+                    <p id="statCombos" class="text-lg font-extrabold text-[#D4A847]">—</p>
+                </div>
+                <div class="rounded-lg p-3 text-center" style="background: #0d1525;">
+                    <p class="text-[0.6rem] text-[#8888A0] font-semibold uppercase tracking-wider mb-1">Manos</p>
+                    <p id="statHands" class="text-lg font-extrabold text-[#7C6FC4]">—</p>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="mb-4">
+                <div class="flex justify-between text-[0.65rem] font-semibold text-[#8888A0] mb-1">
+                    <span>Porcentaje del rango total</span>
+                    <span id="progressLabel">0%</span>
+                </div>
+                <div class="progress-track">
+                    <div id="progressFill" class="progress-fill" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Selected Hand Info -->
+            <div id="handInfo" class="flex-1 rounded-lg p-4 flex flex-col items-center justify-center text-center transition-all duration-300"
+                 style="background: #0d1525; min-height: 100px;">
+                <p class="text-xs text-[#6A6A82] italic">Haz clic en una celda para consultar los astros</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Matrix Section ── -->
+    <div class="rounded-2xl p-4 sm:p-5 border border-[#2A2A40]/60 animate-in"
+         style="background: linear-gradient(135deg, #0f172a 0%, #111827 100%); animation-delay: 0.1s;">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
+            <h2 class="text-sm font-bold text-[#E0E0E8] uppercase tracking-wider flex items-center gap-2">
+                <svg class="w-4 h-4 text-[#D4A847]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                </svg>
+                Matriz de Manos Sagrada
+                <span id="matrixActionLabel" class="ml-2 action-badge fold-to-me text-[0.55rem]">FOLD TO ME</span>
+            </h2>
+            <div class="flex items-center gap-4 text-[0.65rem] font-semibold text-[#8888A0]">
+                <span class="flex items-center gap-1.5">
+                    <span class="inline-block w-3 h-3 rounded-sm" style="background: #10b981"></span> PUSH
+                </span>
+                <span class="flex items-center gap-1.5">
+                    <span class="inline-block w-3 h-3 rounded-sm" style="background: #1a2236"></span> FOLD
+                </span>
+                <span class="hidden sm:flex items-center gap-1.5 text-[#6A6A82]">
+                    ↗ Suited &nbsp;|&nbsp; ↙ Offsuit &nbsp;|&nbsp; ↘ Pares
+                </span>
+            </div>
+        </div>
+
+        <div class="matrix-wrapper">
+            <div id="matrix" class="matrix-grid"></div>
+        </div>
+
+        <div class="mt-3 flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-[0.6rem] text-[#6A6A82] font-medium">
+            <span>↗ Triángulo superior = Manos <strong class="text-[#8888A0]">suited</strong> (s)</span>
+            <span>↙ Triángulo inferior = Manos <strong class="text-[#8888A0]">offsuit</strong> (o)</span>
+            <span>↘ Diagonal = <strong class="text-[#8888A0]">Parejas</strong> (AA, KK, …)</span>
+        </div>
+    </div>
+
+    <!-- ── Instructions Clérigo ── -->
+    <div class="mt-6 rounded-2xl p-5 sm:p-6" style="border: 1px solid rgba(42,42,64,0.6); background: linear-gradient(135deg, #0E0E16 0%, #121220 100%);">
+        <details class="group">
+            <summary class="flex items-center gap-2 cursor-pointer font-bold text-[#E0E0E8] hover:text-white transition-colors">
+                <svg class="w-4 h-4 text-[#D4A847] transition-transform group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                </svg>
+                📖 ¿Cómo uso esta herramienta, Padre?
+            </summary>
+            <div class="mt-4 text-[0.9375rem] text-[#B0B0C0] leading-relaxed space-y-3">
+                <p><strong class="text-[#D4A847]">Paso 1 — Tu posición:</strong> Selecciona dónde estás sentado. Cuanto más cerca del botón, más manos podrás empujar porque hay menos jugadores detrás.</p>
+                <p><strong class="text-[#D4A847]">Paso 2 — Qué pasó antes:</strong> ¿Todos pasaron? ¿Alguien hizo limp? ¿Ya hubo un raise? Esto cambia dramáticamente las manos con las que puedes ir all-in.</p>
+                <p><strong class="text-[#D4A847]">Paso 3 — Tu stack:</strong> Desliza el control o escribe cuántas ciegas grandes tienes. De 1 a 15 BB es push or fold puro. De 15 a 25 es zona gris. Más de 25 ya deberías considerar raise/fold.</p>
+                <p><strong class="text-[#D4A847]">Paso 4 — Consulta al Oráculo:</strong> Pulsa el botón dorado. Las celdas iluminadas son PUSH. Las oscuras son FOLD. Haz clic en cualquier celda para ver el detalle de esa mano.</p>
+                <p><strong class="text-[#D4A847]">Stack Efectivo:</strong> Si la ciega grande tiene menos fichas que tú, activa este ajuste. El Oráculo calculará con el stack más pequeño.</p>
+                <p class="text-[#6A6A82] italic">Modelo Chip EV puro. Para burbuja o cerca de premios, sé más tight de lo que muestra la tabla.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="mt-4 rounded-2xl p-5 sm:p-6" style="border: 1px solid rgba(42,42,64,0.6); background: linear-gradient(135deg, #0E0E16 0%, #121220 100%);">
+        <details class="group">
+            <summary class="flex items-center gap-2 cursor-pointer font-bold text-[#E0E0E8] hover:text-white transition-colors">
+                <svg class="w-4 h-4 text-[#7C6FC4] transition-transform group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                </svg>
+                🤔 ¿Qué significan las acciones previas?
+            </summary>
+            <div class="mt-4 text-[0.9375rem] text-[#B0B0C0] leading-relaxed space-y-4">
+                <div class="flex items-start gap-3">
+                    <span class="action-badge fold-to-me shrink-0 mt-0.5">Fold to me</span>
+                    <p>Todos pasaron. Tus únicos rivales son las ciegas. Escenario clásico de push or fold. Rangos más amplios.</p>
+                </div>
+                <div class="flex items-start gap-3">
+                    <span class="action-badge limper shrink-0 mt-0.5">1 Limper</span>
+                    <p><strong class="text-[#D4A847]">Push sobre limp.</strong> Alguien pagó sin subir. Hay dinero extra en el bote, pero el limper puede hacerte call. Con pocas fichas el dead money te incentiva a empujar más; con muchas, la amenaza de call te frena.</p>
+                </div>
+                <div class="flex items-start gap-3">
+                    <span class="action-badge vs-raise shrink-0 mt-0.5">Facing Raise</span>
+                    <p><strong class="text-[#D4A847]">3-bet all-in.</strong> Alguien abrió con raise. Necesitas manos mucho más fuertes porque el raiser ya mostró fuerza. Los rangos se reducen drásticamente.</p>
+                </div>
+                <div class="flex items-start gap-3">
+                    <span class="action-badge vs-raise-call shrink-0 mt-0.5">Raise + Caller</span>
+                    <p><strong class="text-[#D4A847]">Squeeze all-in.</strong> Alguien abrió y otro pagó. Enfrentas dos rangos. Solo las manos más sagradas justifican esta jugada.</p>
+                </div>
+            </div>
+        </details>
+    </div>
+
+
+</main>
+
+<!-- SEO Content -->
+<div class="max-w-5xl mx-auto px-4 sm:px-6">
+  <div class="prose-clerigo mt-4 mb-8">
+    <h2>¿Quieres entender la teoría?</h2>
+    <p>
+      Esta calculadora es el complemento perfecto de nuestro sermón completo.
+      Si quieres entender por qué Nash dice lo que dice y cómo adaptar tu juego en la burbuja, lee
+      <a href="/estrategia/torneos/push-or-fold">Push or Fold: La Biblia del Short Stack en Torneos</a>.
+    </p>
+  </div>
+</div>
+
+<script is:inline>
+
+(function() {
+    'use strict';
+
+    // ╔══════════════════════════════════════════════════════════════════╗
+    // ║  CONSTANTES                                                     ║
+    // ╚══════════════════════════════════════════════════════════════════╝
+    const RANKS = ['A','K','Q','J','T','9','8','7','6','5','4','3','2'];
+    const TOTAL_COMBOS = 1326;
+    const MAX_STACK = 40;
+
+    // ╔══════════════════════════════════════════════════════════════════╗
+    // ║  HAND RANKINGS — Orden de prioridad para Push (1° = más fuerte)║
+    // ║                                                                 ║
+    // ║  169 manos únicas ordenadas de mayor a menor prioridad          ║
+    // ║  para hacer all-in (push) en situación push-or-fold.            ║
+    // ║                                                                 ║
+    // ║  CÓMO MODIFICAR: Reordena según tablas de Nash más precisas.   ║
+    // ║  Para máxima exactitud, crea rankings separados por posición.  ║
+    // ╚══════════════════════════════════════════════════════════════════╝
+    const HAND_RANKINGS = [
+        // ── Tier 1: Premium (0-9) ──
+        'AA','KK','QQ','AKs','JJ','AKo','AQs','TT','AJs','AQo',
+        // ── Tier 2: Strong (10-19) ──
+        'KQs','99','ATs','AJo','KJs','KQo','88','KTs','A9s','ATo',
+        // ── Tier 3: Good (20-29) ──
+        'QJs','A8s','KJo','K9s','QTs','77','A7s','A5s','A6s','A4s',
+        // ── Tier 4: Playable (30-39) ──
+        'KTo','JTs','QJo','A9o','Q9s','A3s','K8s','66','A2s','J9s',
+        // ── Tier 5: Marginal+ (40-49) ──
+        'K7s','A8o','QTo','T9s','K6s','A7o','K5s','55','A5o','A6o',
+        // ── Tier 6: Marginal (50-59) ──
+        'Q8s','K9o','J8s','K4s','JTo','A4o','T8s','Q7s','K3s','98s',
+        // ── Tier 7: Speculative (60-69) ──
+        'K2s','A3o','44','Q6s','K8o','J7s','A2o','97s','Q5s','87s',
+        // ── Tier 8: Weak (70-79) ──
+        'T7s','K7o','J9o','Q4s','Q9o','J6s','86s','K6o','33','96s',
+        // ── Tier 9: Very Weak (80-89) ──
+        'Q3s','T9o','76s','J5s','K5o','T6s','Q2s','Q8o','75s','85s',
+        // ── Tier 10: Trash+ (90-99) ──
+        '65s','J8o','J4s','95s','22','K4o','T8o','54s','64s','J3s',
+        // ── Tier 11: Trash (100-109) ──
+        '84s','94s','98o','K3o','74s','T5s','Q7o','J2s','53s','93s',
+        // ── Tier 12: Bottom+ (110-119) ──
+        'K2o','87o','Q6o','43s','97o','J7o','T4s','63s','86o','92s',
+        // ── Tier 13: Bottom (120-129) ──
+        'T3s','73s','76o','96o','83s','52s','82s','42s','T2s','65o',
+        // ── Tier 14: Near-bottom (130-139) ──
+        'Q5o','62s','75o','J6o','85o','72s','32s','54o','T7o','95o',
+        // ── Tier 15: Worst (140-149) ──
+        'Q4o','J5o','64o','T6o','Q3o','94o','84o','74o','J4o','53o',
+        // ── Tier 16: Worst- (150-159) ──
+        'Q2o','93o','43o','J3o','63o','T5o','73o','83o','J2o','92o',
+        // ── Tier 17: Absolute bottom (160-168) ──
+        '52o','T4o','42o','62o','T3o','32o','82o','72o','T2o'
+    ];
+
+    // ╔══════════════════════════════════════════════════════════════════╗
+    // ║  PUSH CUTOFFS — Rangos base (Fold to me) para 1-40 BB          ║
+    // ║                                                                 ║
+    // ║  Formato: PUSH_CUTOFFS[POSICION][STACK_EN_BB] = N              ║
+    // ║  → Se pushean las primeras N manos de HAND_RANKINGS.           ║
+    // ║                                                                 ║
+    // ║  Stacks 1-25: Valores óptimos push-or-fold Nash (Chip EV).    ║
+    // ║  Stacks 26-40: Rangos muy tight. En la práctica, con 30+ BB   ║
+    // ║  es mejor usar raise/fold en vez de push-or-fold puro.         ║
+    // ║  Estos valores reflejan cuándo el push all-in sigue siendo    ║
+    // ║  +EV comparado con fold (no vs raise/fold strategy).           ║
+    // ║                                                                 ║
+    // ║  CÓMO MODIFICAR: Ajusta los números con datos de ICMIZER/HRC. ║
+    // ║  Máximo = 169 (push any). Mínimo = 0 (fold everything).       ║
+    // ╚══════════════════════════════════════════════════════════════════╝
+    const PUSH_CUTOFFS = {
+        // ── SB: Push vs BB solamente. Rango más amplio en todas las profundidades. ──
+        SB: {
+            1:169, 2:169, 3:158, 4:143, 5:130, 6:117, 7:105, 8:95,
+            9:87,  10:80, 11:74, 12:68, 13:62, 14:57, 15:52, 16:48,
+            17:44, 18:41, 19:38, 20:35, 21:33, 22:31, 23:29, 24:27, 25:25,
+            26:23, 27:22, 28:20, 29:19, 30:18, 31:17, 32:16, 33:15,
+            34:14, 35:13, 36:13, 37:12, 38:11, 39:11, 40:10
+        },
+        // ── BTN: Push sobre SB + BB. Segundo más amplio. ──
+        BTN: {
+            1:169, 2:165, 3:140, 4:120, 5:105, 6:93, 7:83, 8:75,
+            9:68,  10:62, 11:57, 12:52, 13:48, 14:44, 15:40, 16:37,
+            17:34, 18:32, 19:30, 20:28, 21:26, 22:24, 23:23, 24:22, 25:20,
+            26:19, 27:18, 28:17, 29:16, 30:15, 31:14, 32:13, 33:12,
+            34:12, 35:11, 36:10, 37:10, 38:9,  39:9,  40:8
+        },
+        // ── CO: Push sobre BTN + SB + BB. ──
+        CO: {
+            1:169, 2:155, 3:125, 4:105, 5:90, 6:78, 7:68, 8:60,
+            9:54,  10:48, 11:44, 12:40, 13:37, 14:34, 15:31, 16:29,
+            17:27, 18:25, 19:23, 20:22, 21:20, 22:19, 23:18, 24:17, 25:16,
+            26:15, 27:14, 28:13, 29:12, 30:12, 31:11, 32:10, 33:10,
+            34:9,  35:9,  36:8,  37:8,  38:7,  39:7,  40:6
+        },
+        // ── HJ: Push sobre CO + BTN + SB + BB. ──
+        HJ: {
+            1:165, 2:140, 3:110, 4:90, 5:76, 6:65, 7:56, 8:49,
+            9:43,  10:38, 11:35, 12:32, 13:29, 14:27, 15:25, 16:23,
+            17:21, 18:20, 19:19, 20:18, 21:17, 22:16, 23:15, 24:14, 25:13,
+            26:12, 27:12, 28:11, 29:10, 30:10, 31:9,  32:9,  33:8,
+            34:8,  35:7,  36:7,  37:6,  38:6,  39:6,  40:5
+        },
+        // ── UTG: Push sobre HJ + CO + BTN + SB + BB. Rango más tight. ──
+        UTG: {
+            1:155, 2:125, 3:95,  4:78, 5:65, 6:55, 7:47, 8:41,
+            9:36,  10:32, 11:29, 12:26, 13:24, 14:22, 15:20, 16:19,
+            17:18, 18:17, 19:16, 20:15, 21:14, 22:13, 23:12, 24:12, 25:11,
+            26:10, 27:10, 28:9,  29:9,  30:8,  31:8,  32:7,  33:7,
+            34:6,  35:6,  36:6,  37:5,  38:5,  39:5,  40:5
+        }
+    };
+
+    // ╔══════════════════════════════════════════════════════════════════╗
+    // ║  ACTION MODIFIERS — Ajuste de rangos según acción previa        ║
+    // ║                                                                 ║
+    // ║  Cada acción previa tiene un multiplicador que se aplica al     ║
+    // ║  cutoff base. El multiplicador puede variar según el stack.     ║
+    // ║                                                                 ║
+    // ║  foldToMe:     1.0  (rango base, sin modificación)              ║
+    // ║  limper1:      Variable. Con pocos BB, el dead money extra del  ║
+    // ║                limp incentiva push más amplio (~1.05-1.15x).    ║
+    // ║                Con muchos BB, el riesgo de call lo compensa.    ║
+    // ║  vsRaise:      ~0.45-0.60x. 3-bet shove es mucho más tight.   ║
+    // ║                Solo manos premium vs un rango de apertura.      ║
+    // ║  vsRaiseCaller: ~0.30-0.45x. Squeeze shove ultra-tight.       ║
+    // ║                                                                 ║
+    // ║  CÓMO MODIFICAR: Puedes reemplazar estos multiplicadores por   ║
+    // ║  tablas completas de cutoff separadas (como PUSH_CUTOFFS pero  ║
+    // ║  para cada escenario de acción) para máxima precisión.          ║
+    // ║                                                                 ║
+    // ║  Para datos exactos, usa ICMIZER/HRC con el escenario real:    ║
+    // ║  - "Push over limp" con tamaño de bote ajustado                ║
+    // ║  - "3-bet shove vs open" con tamaño de raise del oponente      ║
+    // ║  - "Squeeze" con raise + call                                   ║
+    // ╚══════════════════════════════════════════════════════════════════╝
+    const ACTION_MODIFIERS = {
+        // Fold to me: rango base sin cambios
+        foldToMe: {
+            getMultiplier: function(stack) { return 1.0; },
+            label: 'Fold to me',
+            emoji: '🟢',
+            badgeClass: 'fold-to-me',
+            hint: 'Rango estándar push-or-fold',
+            matrixLabel: 'FOLD TO ME',
+            pushLabel: 'PUSH All-in',
+            color: '#10b981'
+        },
+
+        // 1 Limper: push over limp
+        // Dead money extra (~1 BB) hace el push ligeramente más rentable
+        // a stacks bajos. A stacks altos, el limper tiene un calling range
+        // más amplio, reduciendo la fold equity.
+        limper1: {
+            getMultiplier: function(stack) {
+                // Stacks muy cortos (1-5 BB): dead money pesa mucho → push más amplio
+                if (stack <= 3)  return 1.15;
+                if (stack <= 5)  return 1.12;
+                if (stack <= 8)  return 1.08;
+                if (stack <= 12) return 1.05;
+                if (stack <= 18) return 1.00;
+                if (stack <= 25) return 0.95;
+                // Stacks altos: el limper probablemente tiene algo → más tight
+                return 0.90;
+            },
+            label: '1 Limper',
+            emoji: '🟡',
+            badgeClass: 'limper',
+            hint: 'Push over limp — dead money extra en el bote',
+            matrixLabel: 'PUSH OVER LIMP',
+            pushLabel: 'PUSH over Limp',
+            color: '#eab308'
+        },
+
+        // Facing Raise: 3-bet shove
+        // Mucho más tight. El raiser tiene un rango definido y fuerte.
+        // A stacks bajos el push sigue siendo viable con buenas manos.
+        // A stacks altos el riesgo de bust contra un rango de apertura
+        // hace que solo manos premium sean rentables.
+        vsRaise: {
+            getMultiplier: function(stack) {
+                if (stack <= 3)  return 0.70;
+                if (stack <= 5)  return 0.62;
+                if (stack <= 8)  return 0.55;
+                if (stack <= 12) return 0.50;
+                if (stack <= 18) return 0.45;
+                if (stack <= 25) return 0.40;
+                if (stack <= 32) return 0.35;
+                return 0.30;
+            },
+            label: 'Facing Raise',
+            emoji: '🔴',
+            badgeClass: 'vs-raise',
+            hint: '3-bet shove — push sobre un raise abierto',
+            matrixLabel: '3-BET SHOVE',
+            pushLabel: 'PUSH over Raise',
+            color: '#ef4444'
+        },
+
+        // Raise + Caller: squeeze shove
+        // Ultra tight. Enfrentas dos rangos. Solo manos super premium.
+        vsRaiseCaller: {
+            getMultiplier: function(stack) {
+                if (stack <= 3)  return 0.55;
+                if (stack <= 5)  return 0.48;
+                if (stack <= 8)  return 0.42;
+                if (stack <= 12) return 0.38;
+                if (stack <= 18) return 0.33;
+                if (stack <= 25) return 0.28;
+                if (stack <= 32) return 0.24;
+                return 0.20;
+            },
+            label: 'Raise + Caller',
+            emoji: '🟣',
+            badgeClass: 'vs-raise-call',
+            hint: 'Squeeze shove — push sobre raise + caller',
+            matrixLabel: 'SQUEEZE',
+            pushLabel: 'PUSH Squeeze',
+            color: '#a855f7'
+        }
+    };
+
+    // ╔══════════════════════════════════════════════════════════════════╗
+    // ║  UTILIDADES                                                     ║
+    // ╚══════════════════════════════════════════════════════════════════╝
+
+    function getHandName(row, col) {
+        if (row === col) return RANKS[row] + RANKS[col];
+        if (row < col)  return RANKS[row] + RANKS[col] + 's';
+        return RANKS[col] + RANKS[row] + 'o';
+    }
+
+    function getHandType(hand) {
+        if (hand.length === 2) return 'pair';
+        return hand.endsWith('s') ? 'suited' : 'offsuit';
+    }
+
+    function getCombos(hand) {
+        const type = getHandType(hand);
+        if (type === 'pair')   return 6;
+        if (type === 'suited') return 4;
+        return 12;
+    }
+
+    function getHandTypeLabel(hand) {
+        const type = getHandType(hand);
+        if (type === 'pair')   return 'Pareja';
+        if (type === 'suited') return 'Suited (mismo palo)';
+        return 'Offsuit (distinto palo)';
+    }
+
+    function getPushColor(rankIndex, cutoff, actionColor) {
+        const ratio = rankIndex / Math.max(cutoff - 1, 1);
+        // Use the action's hue for coloring
+        const h = 158 - ratio * 12;
+        const s = 78 - ratio * 15;
+        const l = 24 + ratio * 20;
+        return `hsl(${h}, ${s}%, ${l}%)`;
+    }
+
+    /**
+     * Devuelve el color de push según la acción previa seleccionada.
+     * Cada escenario tiene su propia paleta de colores para distinguir
+     * visualmente el tipo de situación.
+     */
+    function getActionPushColor(rankIndex, cutoff, action) {
+        const ratio = rankIndex / Math.max(cutoff - 1, 1);
+
+        switch(action) {
+            case 'foldToMe':
+                // Verde estándar
+                return `hsl(${158 - ratio*12}, ${78 - ratio*15}%, ${24 + ratio*20}%)`;
+            case 'limper1':
+                // Amarillo-verde
+                return `hsl(${85 - ratio*10}, ${70 - ratio*12}%, ${26 + ratio*18}%)`;
+            case 'vsRaise':
+                // Rojo-naranja
+                return `hsl(${12 - ratio*8}, ${72 - ratio*15}%, ${28 + ratio*16}%)`;
+            case 'vsRaiseCaller':
+                // Púrpura
+                return `hsl(${280 - ratio*15}, ${60 - ratio*12}%, ${30 + ratio*14}%)`;
+            default:
+                return `hsl(${158 - ratio*12}, ${78 - ratio*15}%, ${24 + ratio*20}%)`;
+        }
+    }
+
+    /**
+     * Devuelve la zona de stack y su etiqueta
+     */
+    function getStackZone(stack) {
+        if (stack <= 5)  return { label: 'Desperation', color: '#ef4444', emoji: '🔴' };
+        if (stack <= 10) return { label: 'Short Stack', color: '#f97316', emoji: '🟠' };
+        if (stack <= 20) return { label: 'Push/Fold Zone', color: '#eab308', emoji: '🟡' };
+        if (stack <= 30) return { label: 'Comfortable', color: '#22c55e', emoji: '🟢' };
+        return { label: 'Deep Stack', color: '#06b6d4', emoji: '🔵' };
+    }
+
+    // ╔══════════════════════════════════════════════════════════════════╗
+    // ║  GENERACIÓN DE LA MATRIZ                                        ║
+    // ╚══════════════════════════════════════════════════════════════════╝
+
+    let selectedCell = null;
+
+    function generateMatrix() {
+        const container = document.getElementById('matrix');
+        container.innerHTML = '';
+
+        const corner = document.createElement('div');
+        corner.className = 'matrix-header corner';
+        corner.textContent = '';
+        container.appendChild(corner);
+
+        for (let c = 0; c < 13; c++) {
+            const hdr = document.createElement('div');
+            hdr.className = 'matrix-header col-hdr';
+            hdr.textContent = RANKS[c];
+            container.appendChild(hdr);
+        }
+
+        for (let r = 0; r < 13; r++) {
+            const rowHdr = document.createElement('div');
+            rowHdr.className = 'matrix-header row-hdr';
+            rowHdr.textContent = RANKS[r];
+            container.appendChild(rowHdr);
+
+            for (let c = 0; c < 13; c++) {
+                const hand = getHandName(r, c);
+                const type = getHandType(hand);
+
+                const cell = document.createElement('div');
+                cell.className = `hand-cell fold ${type}`;
+                cell.dataset.hand = hand;
+                cell.dataset.row = r;
+                cell.dataset.col = c;
+                cell.textContent = hand;
+
+                cell.addEventListener('click', () => selectHand(cell, hand));
+                container.appendChild(cell);
+            }
+        }
+    }
+
+    // ╔══════════════════════════════════════════════════════════════════╗
+    // ║  CÁLCULO Y ACTUALIZACIÓN DE UI                                  ║
+    // ╚══════════════════════════════════════════════════════════════════╝
+
+    let currentPushSet = new Set();
+    let currentCutoff = 0;
+    let currentAction = 'foldToMe';
+    let currentStack = 10;
+    let currentPosition = 'BTN';
+
+    function calculate() {
+        const position = document.getElementById('position').value;
+        const action = document.getElementById('priorAction').value;
+        let stack = parseInt(document.getElementById('stack').value) || 10;
+
+        // Clamp stack to 1-40
+        stack = Math.max(1, Math.min(MAX_STACK, stack));
+
+        // Effective stack
+        if (document.getElementById('useEffective').checked) {
+            const effStack = parseInt(document.getElementById('effectiveStack').value) || stack;
+            stack = Math.min(stack, Math.max(1, Math.min(MAX_STACK, effStack)));
+        }
+
+        currentAction = action;
+        currentStack = stack;
+        currentPosition = position;
+
+        // Get base cutoff for this position + stack
+        const baseCutoff = PUSH_CUTOFFS[position][stack] || 0;
+
+        // Apply action modifier
+        const actionMod = ACTION_MODIFIERS[action];
+        const multiplier = actionMod.getMultiplier(stack);
+        const adjustedCutoff = Math.round(baseCutoff * multiplier);
+
+        // Clamp to valid range
+        const cutoff = Math.max(0, Math.min(169, adjustedCutoff));
+        currentCutoff = cutoff;
+
+        // Build push set
+        const pushSet = new Set();
+        for (let i = 0; i < cutoff && i < HAND_RANKINGS.length; i++) {
+            pushSet.add(HAND_RANKINGS[i]);
+        }
+        currentPushSet = pushSet;
+
+        // Update UI
+        updateMatrix(pushSet, cutoff, action);
+        updateStats(pushSet, cutoff, position, stack, action);
+        updateActionBadge(action);
+        updateStackZone(stack);
+
+        // Update selected hand info if one is selected
+        if (selectedCell) {
+            const hand = selectedCell.dataset.hand;
+            updateHandInfo(hand);
+        }
+    }
+
+    function updateMatrix(pushSet, cutoff, action) {
+        const cells = document.querySelectorAll('.hand-cell');
+        cells.forEach(cell => {
+            const hand = cell.dataset.hand;
+            const type = getHandType(hand);
+
+            if (pushSet.has(hand)) {
+                const rankIndex = HAND_RANKINGS.indexOf(hand);
+                cell.className = `hand-cell push ${type}`;
+                cell.style.backgroundColor = getActionPushColor(rankIndex, cutoff, action);
+            } else {
+                cell.className = `hand-cell fold ${type}`;
+                cell.style.backgroundColor = '';
+            }
+
+            if (selectedCell && selectedCell.dataset.hand === hand) {
+                cell.classList.add('selected');
+            }
+        });
+    }
+
+    function updateActionBadge(action) {
+        const mod = ACTION_MODIFIERS[action];
+        const badge = document.getElementById('actionBadge');
+        const hint = document.getElementById('actionHint');
+        const matrixLabel = document.getElementById('matrixActionLabel');
+
+        badge.className = `action-badge ${mod.badgeClass}`;
+        badge.textContent = `${mod.emoji} ${mod.label}`;
+        hint.textContent = mod.hint;
+
+        matrixLabel.className = `ml-2 action-badge ${mod.badgeClass} text-[0.55rem]`;
+        matrixLabel.textContent = mod.matrixLabel;
+    }
+
+    function updateStackZone(stack) {
+        const zone = getStackZone(stack);
+        const label = document.getElementById('stackZoneLabel');
+        label.textContent = `${zone.emoji} ${zone.label}`;
+        label.style.color = zone.color;
+    }
+
+    function updateStats(pushSet, cutoff, position, stack, action) {
+        let totalCombos = 0;
+        pushSet.forEach(hand => { totalCombos += getCombos(hand); });
+
+        const percentage = ((totalCombos / TOTAL_COMBOS) * 100).toFixed(1);
+        const handsCount = pushSet.size;
+
+        document.getElementById('statPercent').textContent = percentage + '%';
+        document.getElementById('statCombos').textContent = totalCombos;
+        document.getElementById('statHands').textContent = handsCount + '/169';
+
+        document.getElementById('progressFill').style.width = percentage + '%';
+        document.getElementById('progressLabel').textContent = percentage + '%';
+
+        const posColors = { UTG:'#ef4444', HJ:'#eab308', CO:'#f97316', BTN:'#22c55e', SB:'#3b82f6' };
+        const posNames  = { UTG:'Under The Gun', HJ:'Hijack', CO:'Cutoff', BTN:'Button', SB:'Small Blind' };
+        const actionMod = ACTION_MODIFIERS[action];
+        const multiplier = actionMod.getMultiplier(stack);
+        const multiplierPct = Math.round(multiplier * 100);
+
+        if (!selectedCell) {
+            const infoEl = document.getElementById('handInfo');
+            const zone = getStackZone(stack);
+            const modifierNote = action === 'foldToMe' ? '' :
+                `<div class="mt-2 flex items-center justify-center gap-1.5">
+                    <span class="action-badge ${actionMod.badgeClass}">${actionMod.emoji} ${actionMod.label}</span>
+                    <span class="text-[0.6rem] text-[#6A6A82]">×${multiplier.toFixed(2)} (${multiplierPct}% del rango base)</span>
+                </div>`;
+
+            infoEl.innerHTML = `
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="inline-block w-3 h-3 rounded-full" style="background:${posColors[position]}"></span>
+                    <span class="text-sm font-bold text-[#E0E0E8]">${position} — ${posNames[position]}</span>
+                </div>
+                <p class="text-2xl font-black stat-value mb-1">${stack} BB</p>
+                <p class="text-[0.6rem] font-semibold mb-1" style="color:${zone.color}">${zone.emoji} ${zone.label}</p>
+                <p class="text-xs text-[#8888A0]">
+                    ${actionMod.pushLabel}: <strong style="color:${actionMod.color}">${handsCount}</strong> tipos de mano
+                    (<strong style="color:${actionMod.color}">${totalCombos}</strong> combos, <strong style="color:${actionMod.color}">${percentage}%</strong>)
+                </p>
+                ${modifierNote}
+                <p class="text-[0.6rem] text-[#6A6A82] mt-2 italic">Haz clic en una celda para ver detalles</p>
+            `;
+        }
+    }
+
+    // ╔══════════════════════════════════════════════════════════════════╗
+    // ║  SELECCIÓN DE MANO INDIVIDUAL                                   ║
+    // ╚══════════════════════════════════════════════════════════════════╝
+
+    function selectHand(cell, hand) {
+        if (selectedCell) {
+            selectedCell.classList.remove('selected');
+        }
+
+        if (selectedCell && selectedCell.dataset.hand === hand) {
+            selectedCell = null;
+            calculate();
+            return;
+        }
+
+        selectedCell = cell;
+        cell.classList.add('selected');
+        updateHandInfo(hand);
+    }
+
+    function updateHandInfo(hand) {
+        const infoEl = document.getElementById('handInfo');
+        const isPush = currentPushSet.has(hand);
+        const rankIndex = HAND_RANKINGS.indexOf(hand);
+        const combos = getCombos(hand);
+        const type = getHandType(hand);
+        const typeLabel = getHandTypeLabel(hand);
+        const actionMod = ACTION_MODIFIERS[currentAction];
+
+        const actionColor = isPush ? actionMod.color : '#ef4444';
+        const actionText  = isPush ? `✓ ${actionMod.pushLabel}` : '✗ FOLD';
+        const actionBg    = isPush ? `${actionMod.color}18` : 'rgba(239,68,68,0.1)';
+
+        // Show action context
+        const actionContext = currentAction === 'foldToMe' ? '' :
+            `<div class="mt-2">
+                <span class="action-badge ${actionMod.badgeClass}">${actionMod.emoji} ${actionMod.label}</span>
+            </div>`;
+
+        // If fold, show what action would need for this hand to be a push
+        let foldNote = '';
+        if (!isPush) {
+            // Check if this hand pushes in "fold to me" scenario
+            const baseCutoff = PUSH_CUTOFFS[currentPosition][currentStack] || 0;
+            if (rankIndex < baseCutoff && currentAction !== 'foldToMe') {
+                foldNote = `<p class="text-[0.55rem] text-[#D4A847]/70 mt-2">⚠ Sería PUSH con "Fold to me"</p>`;
+            }
+        }
+
+        infoEl.innerHTML = `
+            <div class="text-3xl font-black mb-1" style="font-family:'JetBrains Mono',monospace; color:${actionColor}">
+                ${hand}
+            </div>
+            <div class="inline-block px-3 py-1 rounded-full text-xs font-bold mb-2"
+                 style="background:${actionBg}; color:${actionColor}; border:1px solid ${actionColor}30">
+                ${actionText}
+            </div>
+            ${actionContext}
+            <div class="w-full grid grid-cols-3 gap-2 text-center mt-2">
+                <div>
+                    <p class="text-[0.55rem] text-[#6A6A82] font-semibold uppercase">Tipo</p>
+                    <p class="text-xs font-bold text-[#B0B0C0]">${typeLabel}</p>
+                </div>
+                <div>
+                    <p class="text-[0.55rem] text-[#6A6A82] font-semibold uppercase">Combos</p>
+                    <p class="text-xs font-bold text-[#B0B0C0]">${combos}</p>
+                </div>
+                <div>
+                    <p class="text-[0.55rem] text-[#6A6A82] font-semibold uppercase">Ranking</p>
+                    <p class="text-xs font-bold text-[#B0B0C0]">#${rankIndex + 1} / 169</p>
+                </div>
+            </div>
+            ${foldNote}
+        `;
+    }
+
+    // ╔══════════════════════════════════════════════════════════════════╗
+    // ║  EVENT LISTENERS & INITIALIZATION                               ║
+    // ╚══════════════════════════════════════════════════════════════════╝
+
+    function init() {
+        const positionEl      = document.getElementById('position');
+        const priorActionEl   = document.getElementById('priorAction');
+        const stackEl         = document.getElementById('stack');
+        const stackSliderEl   = document.getElementById('stackSlider');
+        const useEffectiveEl  = document.getElementById('useEffective');
+        const effectiveEl     = document.getElementById('effectiveStack');
+        const effectiveSlider = document.getElementById('effectiveSlider');
+        const effectiveContainer = document.getElementById('effectiveContainer');
+
+        // Sync stack input ↔ slider
+        stackSliderEl.addEventListener('input', () => {
+            stackEl.value = stackSliderEl.value;
+            calculate();
+        });
+        stackEl.addEventListener('input', () => {
+            let v = parseInt(stackEl.value) || 1;
+            v = Math.max(1, Math.min(MAX_STACK, v));
+            stackSliderEl.value = v;
+            calculate();
+        });
+
+        // Sync effective stack input ↔ slider
+        effectiveSlider.addEventListener('input', () => {
+            effectiveEl.value = effectiveSlider.value;
+            calculate();
+        });
+        effectiveEl.addEventListener('input', () => {
+            let v = parseInt(effectiveEl.value) || 1;
+            v = Math.max(1, Math.min(MAX_STACK, v));
+            effectiveSlider.value = v;
+            calculate();
+        });
+
+        // Toggle effective stack container
+        useEffectiveEl.addEventListener('change', () => {
+            effectiveContainer.classList.toggle('hidden', !useEffectiveEl.checked);
+            calculate();
+        });
+
+        // Position change
+        positionEl.addEventListener('change', calculate);
+
+        // Prior Action change
+        priorActionEl.addEventListener('change', calculate);
+
+        // Generate the matrix
+        generateMatrix();
+
+        // Initial calculation
+        calculate();
+    }
+
+    // Expose calculate globally for the button onclick
+    window.calculate = calculate;
+
+    // Run on DOM ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+
+})();
+
+</script>
+</BaseLayout>

@@ -1,0 +1,201 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+import { getArticleSchema, getCanonical, getReadingTime } from '@/utils/seo';
+
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  updatedDate?: Date;
+  author?: string;
+  image?: { src: string; alt: string; width?: number; height?: number };
+  tags?: string[];
+  category?: string;
+  silo?: string;
+  difficulty?: string;
+  schemaType?: string;
+  rawContent?: string;
+  /** Custom CTA copy — contextual al artículo */
+  ctaEyebrow?: string;
+  ctaHeadline?: string;
+  ctaBody?: string;
+  ctaCta?: string;
+}
+
+const {
+  title,
+  description,
+  pubDate,
+  updatedDate,
+  author = 'El Clérigo',
+  image,
+  tags = [],
+  category,
+  silo,
+  difficulty,
+  schemaType = 'Article',
+  rawContent = '',
+  ctaEyebrow,
+  ctaHeadline,
+  ctaBody,
+  ctaCta,
+} = Astro.props;
+
+const readingTime = rawContent ? getReadingTime(rawContent) : 5;
+const articleUrl = getCanonical(Astro.url.pathname);
+
+const articleSchema = getArticleSchema({
+  title,
+  description,
+  url: articleUrl,
+  image: image?.src,
+  pubDate,
+  updatedDate,
+  author,
+  schemaType,
+});
+
+const breadcrumbItems = [];
+if (silo) {
+  const siloNames: Record<string, string> = {
+    estrategia: 'Estrategia',
+    psicologia: 'Psicología',
+    noticias: 'Noticias',
+    conceptos: 'Conceptos',
+  };
+  breadcrumbItems.push({ name: siloNames[silo] || silo, url: `/${silo}` });
+}
+if (category) {
+  const categoryNames: Record<string, string> = {
+    preflop: 'Pre-Flop', postflop: 'Post-Flop', torneos: 'Torneos',
+    'cash-game': 'Cash Game', tilt: 'Tilt', mindset: 'Mindset',
+    'bankroll-management': 'Bankroll',
+  };
+  breadcrumbItems.push({ name: categoryNames[category] || category, url: `/${silo}/${category}` });
+}
+breadcrumbItems.push({ name: title, url: Astro.url.pathname });
+
+const difficultyLabels: Record<string, { label: string; color: string; bg: string }> = {
+  novicio: { label: '🕯️ Novicio', color: 'text-success', bg: 'rgba(46,204,113,0.08)' },
+  acolito: { label: '📖 Acólito', color: 'text-incense-light', bg: 'rgba(124,111,196,0.08)' },
+  sacerdote: { label: '⛪ Sacerdote', color: 'text-gold', bg: 'rgba(212,168,71,0.08)' },
+  obispo: { label: '👑 Obispo', color: 'text-blood-light', bg: 'rgba(196,30,58,0.08)' },
+};
+
+const formattedDate = pubDate.toLocaleDateString('es-ES', {
+  year: 'numeric', month: 'long', day: 'numeric',
+});
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  type="article"
+  pubDate={pubDate}
+  updatedDate={updatedDate}
+  author={author}
+  image={image}
+  tags={tags}
+  ctaVariant="sermon"
+  ctaEyebrow={ctaEyebrow}
+  ctaHeadline={ctaHeadline}
+  ctaBody={ctaBody}
+  ctaCta={ctaCta}
+>
+  <script type="application/ld+json" set:html={articleSchema} />
+
+  <article class="relative">
+    <!-- ===== ARTICLE HEADER ===== -->
+    <header class="relative overflow-hidden pb-10 pt-10">
+      <!-- Background glow -->
+      <div class="pointer-events-none absolute left-1/2 top-0 h-[350px] w-[600px] -translate-x-1/2 opacity-[0.04]" style="background: radial-gradient(ellipse, var(--color-gold) 0%, transparent 70%); filter: blur(60px);" aria-hidden="true"></div>
+
+      <div class="relative mx-auto max-w-3xl px-4 sm:px-6">
+        <Breadcrumb items={breadcrumbItems} />
+
+        <!-- Tags -->
+        {tags.length > 0 && (
+          <div class="mb-5 flex flex-wrap gap-2">
+            {tags.slice(0, 4).map((tag) => (
+              <span class="rounded-full px-3 py-1 text-[0.6875rem] font-medium" style="background: rgba(124, 111, 196, 0.08); color: var(--color-incense-light); border: 1px solid rgba(124, 111, 196, 0.12);">
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+
+        <!-- Title -->
+        <h1 class="font-display text-3xl font-extrabold leading-[1.1] text-scripture sm:text-4xl lg:text-[2.75rem]">
+          {title}
+        </h1>
+
+        <!-- Description -->
+        <p class="mt-5 text-lg leading-relaxed text-psalm sm:text-xl">{description}</p>
+
+        <!-- Meta bar -->
+        <div class="mt-7 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-b border-chalice/15 py-4">
+          <div class="flex items-center gap-2">
+            <div class="flex h-8 w-8 items-center justify-center rounded-full text-xs" style="background: linear-gradient(135deg, rgba(212,168,71,0.12), rgba(212,168,71,0.04)); border: 1px solid rgba(212,168,71,0.15);">✝</div>
+            <span class="text-sm font-medium text-scripture">{author}</span>
+          </div>
+          <span class="text-chalice-light">·</span>
+          <time datetime={pubDate.toISOString()} class="text-sm text-whisper">{formattedDate}</time>
+          <span class="text-chalice-light">·</span>
+          <span class="text-sm text-whisper">{readingTime} min de lectura</span>
+          {difficulty && difficultyLabels[difficulty] && (
+            <>
+              <span class="text-chalice-light">·</span>
+              <span class={`text-sm font-medium ${difficultyLabels[difficulty].color}`} style={`background: ${difficultyLabels[difficulty].bg}; padding: 0.125rem 0.625rem; border-radius: 9999px;`}>
+                {difficultyLabels[difficulty].label}
+              </span>
+            </>
+          )}
+        </div>
+      </div>
+    </header>
+
+    <!-- ===== FEATURED IMAGE ===== -->
+    {image && (
+      <figure class="mx-auto mb-12 max-w-4xl px-4 sm:px-6">
+        <div class="overflow-hidden rounded-2xl" style="border: 1px solid rgba(30, 30, 48, 0.6);">
+          <img
+            src={image.src}
+            alt={image.alt}
+            width={image.width || 1200}
+            height={image.height || 630}
+            loading="eager"
+            decoding="async"
+            class="w-full object-cover"
+            style="aspect-ratio: 1.91/1;"
+          />
+        </div>
+      </figure>
+    )}
+
+    <!-- ===== ARTICLE BODY ===== -->
+    <div class="mx-auto max-w-3xl px-4 sm:px-6">
+      <div class="prose-clerigo">
+        <slot />
+      </div>
+
+      <!-- ===== END DECORATION ===== -->
+      <div class="mt-16 mb-8 text-center">
+        <div class="divider-sacred">
+          <span class="text-sm text-whisper/50">♠ ♥ ♦ ♣</span>
+        </div>
+
+        <!-- Back to silo -->
+        {silo && (
+          <a
+            href={`/${silo}`}
+            class="mt-6 inline-flex items-center gap-2 text-sm font-medium text-psalm transition-all hover:gap-3 hover:text-gold"
+          >
+            <span aria-hidden="true">←</span>
+            Volver a {silo === 'estrategia' ? 'Estrategia' : silo === 'psicologia' ? 'Psicología' : silo === 'noticias' ? 'Noticias' : 'Conceptos'}
+          </a>
+        )}
+      </div>
+    </div>
+  </article>
+</BaseLayout>

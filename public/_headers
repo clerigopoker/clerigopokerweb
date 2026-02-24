@@ -1,0 +1,29 @@
+# ============================================
+# CLÉRIGO POKER — Cloudflare Pages Headers
+# Security + Performance optimized
+# ============================================
+
+/*
+  # Security
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://tracking.wptpartners.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://cloudflareinsights.com; frame-src 'self' https://www.googletagmanager.com; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+
+# Hashed Astro assets — immutable forever
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Images — 30 days
+/images/*
+  Cache-Control: public, max-age=2592000, stale-while-revalidate=86400
+
+# Favicon — 7 days
+/favicon.*
+  Cache-Control: public, max-age=604800
+
+# HTML pages — revalidate always (so deploys take effect immediately)
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate

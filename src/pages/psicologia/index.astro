@@ -1,0 +1,81 @@
+---
+/**
+ * /psicologia/index.astro — Landing page del silo Psicología
+ */
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+import ArticleCard from '@/components/ArticleCard.astro';
+
+const allPosts = await getCollection('psicologia', ({ data }) => !data.draft);
+const posts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<BaseLayout
+  title="Psicología del Póker"
+  description="Tilt, mindset y bankroll management. La batalla más dura del póker se libra entre tus orejas. Guías de psicología para jugadores que buscan el control mental."
+>
+  <section class="mx-auto max-w-4xl px-4 py-10 sm:px-6">
+    <Breadcrumb items={[{ name: 'Psicología', url: '/psicologia' }]} />
+
+    <header class="mb-12">
+      <h1 class="font-display text-4xl font-bold text-scripture sm:text-5xl">
+        🧠 <span class="text-sacred">Psicología</span>
+      </h1>
+      <p class="mt-4 max-w-2xl text-lg text-psalm">
+        Las cartas no mienten, pero tu cerebro sí. Aquí desarmamos los demonios mentales
+        que sabotean tu juego desde las sombras.
+      </p>
+    </header>
+
+    <!-- Sub-categorías -->
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-16">
+      <a href="/psicologia/tilt" class="card-altar group transition-all hover:border-blood/40 hover:-translate-y-1">
+        <h2 class="font-display text-xl font-bold text-scripture group-hover:text-blood-light">Tilt</h2>
+        <p class="mt-2 text-sm text-psalm">
+          El demonio más antiguo del póker. Aprende a reconocerlo, domarlo y convertirlo en combustible.
+        </p>
+      </a>
+      <a href="/psicologia/mindset" class="card-altar group transition-all hover:border-incense/40 hover:-translate-y-1">
+        <h2 class="font-display text-xl font-bold text-scripture group-hover:text-incense-light">Mindset</h2>
+        <p class="mt-2 text-sm text-psalm">
+          La mentalidad del ganador. Disciplina, enfoque y la capacidad de jugar tu A-game cuando todo arde.
+        </p>
+      </a>
+      <a href="/psicologia/bankroll-management" class="card-altar group transition-all hover:border-gold/40 hover:-translate-y-1">
+        <h2 class="font-display text-xl font-bold text-scripture group-hover:text-sacred">Bankroll</h2>
+        <p class="mt-2 text-sm text-psalm">
+          Gestión sagrada del dinero. Porque el jugador que no respeta su bankroll está condenado.
+        </p>
+      </a>
+    </div>
+
+    <!-- Listado de artículos -->
+    {posts.length > 0 ? (
+      <div>
+        <div class="divider-sacred mb-8">
+          <span class="font-display text-sm font-semibold uppercase tracking-widest text-gold">
+            Últimos Sermones
+          </span>
+        </div>
+        <div class="grid gap-6 sm:grid-cols-2">
+          {posts.map((post) => (
+            <ArticleCard
+              title={post.data.title}
+              description={post.data.description}
+              href={`/psicologia/${post.id}`}
+              pubDate={post.data.pubDate}
+              tags={post.data.tags}
+              difficulty={post.data.difficulty}
+              image={post.data.image}
+            />
+          ))}
+        </div>
+      </div>
+    ) : (
+      <div class="card-altar text-center py-12">
+        <p class="text-psalm text-lg">🕯️ Los primeros sermones psicológicos están en camino...</p>
+      </div>
+    )}
+  </section>
+</BaseLayout>

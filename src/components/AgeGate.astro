@@ -1,0 +1,135 @@
+---
+/**
+ * AgeGate.astro — Verificación de edad obligatoria
+ * Aparece solo en la primera visita.
+ * Bloquea todo el contenido hasta confirmar.
+ * Voz del Clérigo.
+ */
+---
+
+<div
+  id="age-gate"
+  class="fixed inset-0 z-[9999] hidden"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Verificación de edad"
+>
+  <!-- Backdrop -->
+  <div class="absolute inset-0" style="background: rgba(8, 8, 13, 0.97); backdrop-filter: blur(20px);"></div>
+
+  <!-- Content -->
+  <div class="relative flex min-h-screen items-center justify-center px-4">
+    <div class="w-full max-w-md text-center">
+
+      <!-- Cross icon -->
+      <div class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl text-2xl" style="background: linear-gradient(135deg, rgba(212,168,71,0.12), rgba(212,168,71,0.04)); border: 1px solid rgba(212,168,71,0.2);">
+        <span class="text-gold">✝</span>
+      </div>
+
+      <!-- Logo -->
+      <p class="font-display text-xs font-bold uppercase tracking-[0.25em] text-gold/70">Clérigo Poker</p>
+
+      <!-- Headline -->
+      <h2 class="mt-4 font-display text-2xl font-extrabold text-scripture sm:text-3xl">
+        Alto ahí, feligrés
+      </h2>
+
+      <!-- Body -->
+      <p class="mx-auto mt-4 max-w-sm text-sm leading-relaxed text-psalm">
+        Esta parroquia trata sobre póker real con dinero real. Antes de entrar necesitamos saber
+        que tienes la edad legal para participar en juegos de azar en tu lugar de residencia.
+      </p>
+
+      <!-- Age question -->
+      <div class="mt-8 rounded-xl p-6" style="background: rgba(20, 20, 31, 0.8); border: 1px solid rgba(30, 30, 48, 0.6);">
+        <p class="text-sm font-semibold text-scripture">
+          ¿Tienes 18 años o más?
+        </p>
+        <p class="mt-1 text-xs text-whisper">
+          (O la edad mínima legal en tu jurisdicción)
+        </p>
+
+        <div class="mt-5 flex gap-3">
+          <button
+            id="age-confirm"
+            class="btn-communion flex-1 justify-center !text-xs"
+          >
+            Sí, soy mayor de edad
+          </button>
+          <button
+            id="age-deny"
+            class="flex-1 rounded-lg px-4 py-3 text-xs font-medium text-whisper transition-all hover:bg-white/5 hover:text-psalm"
+            style="border: 1px solid rgba(30, 30, 48, 0.6);"
+          >
+            No
+          </button>
+        </div>
+      </div>
+
+      <!-- Disclaimer -->
+      <p class="mt-6 text-[0.625rem] leading-relaxed text-whisper/40">
+        Al confirmar, aceptas que tienes la edad legal para acceder a contenido relacionado con juegos de azar.
+        Este sitio contiene enlaces de afiliado a plataformas de póker online.
+        Consulta nuestros <a href="/terminos-y-condiciones" target="_blank" rel="noopener" class="text-whisper/60 underline">términos y condiciones</a>.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Denied state -->
+<div
+  id="age-denied"
+  class="fixed inset-0 z-[9999] hidden"
+  role="alert"
+>
+  <div class="absolute inset-0" style="background: rgba(8, 8, 13, 0.99);"></div>
+  <div class="relative flex min-h-screen items-center justify-center px-4">
+    <div class="text-center">
+      <p class="text-4xl">🚫</p>
+      <h2 class="mt-4 font-display text-xl font-bold text-scripture">
+        Lo sentimos, hermano
+      </h2>
+      <p class="mt-3 text-sm text-psalm">
+        No puedes acceder a este sitio. El póker es cosa de adultos.<br>
+        Vuelve cuando cumplas la edad legal.
+      </p>
+      <p class="mt-6 text-xs text-whisper/40">
+        Si crees que esto es un error, borra los datos del sitio en tu navegador.
+      </p>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (function() {
+    var ageStatus = localStorage.getItem('cp_age_verified');
+
+    // Already verified
+    if (ageStatus === 'yes') return;
+
+    // Previously denied
+    if (ageStatus === 'denied') {
+      document.getElementById('age-denied').classList.remove('hidden');
+      return;
+    }
+
+    // Show gate
+    var gate = document.getElementById('age-gate');
+    if (gate) gate.classList.remove('hidden');
+
+    // Prevent scroll
+    document.documentElement.style.overflow = 'hidden';
+
+    document.getElementById('age-confirm').addEventListener('click', function() {
+      localStorage.setItem('cp_age_verified', 'yes');
+      gate.classList.add('hidden');
+      document.documentElement.style.overflow = '';
+    });
+
+    document.getElementById('age-deny').addEventListener('click', function() {
+      localStorage.setItem('cp_age_verified', 'denied');
+      gate.classList.add('hidden');
+      document.getElementById('age-denied').classList.remove('hidden');
+    });
+  })();
+</script>

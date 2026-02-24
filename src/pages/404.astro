@@ -1,0 +1,38 @@
+---
+/**
+ * 404.astro — Página de error 404
+ * "El river te ha traicionado"
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="404 — Mano Perdida"
+  description="Esta página no existe. Como tu bankroll después de un domingo de tilt."
+  noindex={true}
+  hideCTA={true}
+>
+  <section class="flex min-h-[60vh] items-center justify-center px-4 py-20 text-center">
+    <div class="max-w-lg">
+      <p class="text-8xl font-bold text-gold/20 font-display">404</p>
+      <h1 class="mt-4 font-display text-3xl font-bold text-scripture sm:text-4xl">
+        El River te ha Traicionado
+      </h1>
+      <p class="mt-4 text-lg text-psalm">
+        Esta página no existe. Como tu bankroll después de un domingo de tilt.
+        Pero tranquilo, hermano: hasta los santos se pierden a veces.
+      </p>
+      <div class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+        <a href="/" class="btn-communion">
+          Volver a la Parroquia →
+        </a>
+        <a
+          href="/estrategia"
+          class="text-sm text-psalm transition-colors hover:text-gold"
+        >
+          O prueba con Estrategia
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

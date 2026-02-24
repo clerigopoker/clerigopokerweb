@@ -1,0 +1,77 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  href: string;
+  pubDate: Date;
+  tags?: string[];
+  difficulty?: string;
+  image?: { src: string; alt: string };
+}
+
+const { title, description, href, pubDate, tags = [], difficulty, image } = Astro.props;
+
+const difficultyLabels: Record<string, { label: string; color: string }> = {
+  novicio: { label: '🕯️ Novicio', color: 'text-success' },
+  acolito: { label: '📖 Acólito', color: 'text-incense-light' },
+  sacerdote: { label: '⛪ Sacerdote', color: 'text-gold' },
+  obispo: { label: '👑 Obispo', color: 'text-blood-light' },
+};
+---
+
+<a href={href} class="card-altar group block">
+  {image && (
+    <div class="mb-5 overflow-hidden rounded-lg" style="aspect-ratio: 1.91/1;">
+      <img
+        src={image.src}
+        alt={image.alt}
+        width="600"
+        height="315"
+        loading="lazy"
+        decoding="async"
+        class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+      />
+    </div>
+  )}
+
+  <!-- Meta line -->
+  <div class="flex items-center gap-2.5 text-[0.6875rem] font-medium text-whisper">
+    <time datetime={pubDate.toISOString()}>
+      {pubDate.toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' })}
+    </time>
+    {difficulty && difficultyLabels[difficulty] && (
+      <>
+        <span class="text-chalice-light">·</span>
+        <span class={difficultyLabels[difficulty].color}>
+          {difficultyLabels[difficulty].label}
+        </span>
+      </>
+    )}
+  </div>
+
+  <!-- Title -->
+  <h3 class="mt-2.5 font-display text-lg font-bold leading-snug text-scripture transition-colors duration-300 group-hover:text-sacred">
+    {title}
+  </h3>
+
+  <!-- Description -->
+  <p class="mt-2.5 text-sm leading-relaxed text-psalm line-clamp-3">
+    {description}
+  </p>
+
+  <!-- Tags -->
+  {tags.length > 0 && (
+    <div class="mt-4 flex flex-wrap gap-1.5">
+      {tags.slice(0, 3).map((tag) => (
+        <span class="rounded-full px-2.5 py-0.5 text-[0.6875rem] font-medium" style="background: rgba(212, 168, 71, 0.06); color: var(--color-gold); border: 1px solid rgba(212, 168, 71, 0.1);">
+          {tag}
+        </span>
+      ))}
+    </div>
+  )}
+
+  <!-- Read more -->
+  <span class="mt-4 inline-flex items-center gap-1 text-xs font-medium text-gold/75 transition-all duration-300 group-hover:gap-2.5 group-hover:text-gold">
+    Leer sermón <span aria-hidden="true">→</span>
+  </span>
+</a>

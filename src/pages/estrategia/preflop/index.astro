@@ -1,0 +1,49 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+import ArticleCard from '@/components/ArticleCard.astro';
+
+const allPosts = await getCollection('estrategia', ({ data }) => !data.draft && data.category === 'preflop');
+const posts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<BaseLayout
+  title="Estrategia Pre-Flop"
+  description="Guías de estrategia pre-flop: ranges de apertura, 3-bet, squeeze y el arte de elegir tus batallas antes de que el flop caiga."
+>
+  <section class="mx-auto max-w-4xl px-4 py-10 sm:px-6">
+    <Breadcrumb items={[
+      { name: 'Estrategia', url: '/estrategia' },
+      { name: 'Pre-Flop', url: '/estrategia/preflop' },
+    ]} />
+    <header class="mb-12">
+      <h1 class="font-display text-4xl font-bold text-scripture sm:text-5xl">
+        ♠ Estrategia <span class="text-sacred">Pre-Flop</span>
+      </h1>
+      <p class="mt-4 max-w-2xl text-lg text-psalm">
+        El génesis de cada mano. Aquí se decide si entras a la batalla con una espada
+        o con un palillo de dientes. Ranges, 3-bets, squeezes, y el arte supremo de saber foldear.
+      </p>
+    </header>
+    {posts.length > 0 ? (
+      <div class="grid gap-6 sm:grid-cols-2">
+        {posts.map((post) => (
+          <ArticleCard
+            title={post.data.title}
+            description={post.data.description}
+            href={`/estrategia/${post.id}`}
+            pubDate={post.data.pubDate}
+            tags={post.data.tags}
+            difficulty={post.data.difficulty}
+            image={post.data.image}
+          />
+        ))}
+      </div>
+    ) : (
+      <div class="card-altar text-center py-12">
+        <p class="text-psalm text-lg">🕯️ Los primeros sermones pre-flop están en camino...</p>
+      </div>
+    )}
+  </section>
+</BaseLayout>
