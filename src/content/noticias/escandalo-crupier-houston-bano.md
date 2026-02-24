@@ -38,19 +38,6 @@ El video de seguridad, de cuatro minutos que parecen una eternidad en el infiern
 
 Lo que sigue es un insulto a todos los que sudamos cada ciega. Tras salir del confesionario de azulejos, Estrada vuelve a su silla y Moe ocupa el puesto de dealer. Sin pudor alguno, realiza un **falso barajado** —un baile de manos vacío que no altera el orden de las cartas— y reparte un cooler milagroso que permite a Estrada doblarse por una suma que muchos fieles tardarían meses en ganar honestamente.
 
-<div style="margin: 2rem 0;">
-  <p style="font-style: italic; text-align: center; color: #888;">"Observen el registro del mal con sus propios ojos. La prueba grabada que PokerNews ha rescatado del olvido:"</p>
-  <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);">
-    <iframe 
-      style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
-      src="https://www.youtube.com/embed/4M77MQymafM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>" 
-      title="Poker Dealer Caught Cheating in Houston" 
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-      allowfullscreen>
-    </iframe>
-  </div>
-</div>
-
 ---
 
 ## El Acecho del Depredador
