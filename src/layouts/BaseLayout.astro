@@ -17,6 +17,7 @@ import AgeGate from '@/components/AgeGate.astro';
 import Analytics from '@/components/Analytics.astro';
 import { getWebSiteSchema, type SEOProps } from '@/utils/seo';
 import '@/styles/global.css';
+import WptBanner from '@/components/WptBanner.astro';
 
 interface Props extends SEOProps {
   /** Si true, no muestra el CTA de WPT al final */
@@ -77,7 +78,7 @@ const websiteSchema = getWebSiteSchema();
     </main>
 
     {!hideCTA && <CTAWpt variant={ctaVariant} customEyebrow={ctaEyebrow} customHeadline={ctaHeadline} customBody={ctaBody} customCta={ctaCta} />}
-
+	<WptBanner placement="footer" />
     <Footer />
 
     <AgeGate />
