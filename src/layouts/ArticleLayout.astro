@@ -175,40 +175,53 @@ const formattedDate = pubDate.toLocaleDateString('es-ES', {
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
       <div class="flex gap-10">
 
-        <!-- Columna principal — artículo -->
+        <!-- Columna principal — artículo con efecto papiro -->
         <div class="min-w-0 flex-1">
-          <div class="prose-clerigo">
-            <slot />
+
+          <!-- Rotura superior -->
+          <svg class="w-full" style="height:28px; display:block;" viewBox="0 0 900 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M0,28 L0,18 C20,22 35,10 55,14 C70,17 80,6 100,10 C118,14 128,4 148,8 C165,12 175,2 195,6 C212,10 225,0 245,5 C262,9 272,1 292,5 C310,9 322,2 342,7 C358,11 370,3 390,8 C408,13 418,5 438,9 C455,13 468,4 488,8 C505,12 518,3 538,7 C555,11 568,2 588,6 C606,10 616,2 636,7 C653,12 665,4 685,8 C702,12 715,3 735,7 C752,11 765,2 785,6 C803,10 815,2 835,7 C852,12 865,4 885,8 L900,8 L900,28 Z"
+              fill="rgba(18,18,28,0.75)"/>
+            <path d="M0,28 L0,20 C15,24 28,14 48,17 C65,20 78,10 98,14 C115,17 130,8 150,12 C168,16 180,7 200,11 C218,15 230,6 250,10 C268,14 280,5 300,9 C318,13 330,5 350,9 C368,13 380,5 400,10 C418,15 430,7 450,11 C468,15 480,7 500,11 C518,15 530,7 550,11 C568,15 580,7 600,11 C618,15 630,7 650,11 C668,15 680,7 700,11 C718,15 730,7 750,11 C768,15 780,7 800,11 C818,15 832,8 852,12 C868,15 880,8 900,12 L900,28 Z"
+              fill="rgba(10,10,18,0.5)" />
+          </svg>
+
+          <!-- Cuerpo del papiro -->
+          <div
+            class="relative px-8 py-10 sm:px-12"
+            style="
+              background: linear-gradient(160deg, rgba(18,18,28,0.72) 0%, rgba(10,10,18,0.80) 100%);
+              backdrop-filter: blur(28px) saturate(1.8) brightness(1.15);
+              -webkit-backdrop-filter: blur(28px) saturate(1.8) brightness(1.15);
+              box-shadow:
+                0 20px 60px rgba(0,0,0,0.65),
+                0 8px 20px rgba(0,0,0,0.45),
+                inset 0 1px 0 rgba(255,255,255,0.06),
+                inset 0 -1px 0 rgba(0,0,0,0.3),
+                inset 4px 0 30px rgba(0,0,0,0.2),
+                inset -4px 0 30px rgba(0,0,0,0.2);
+              border-left: 1px solid rgba(255,255,255,0.05);
+              border-right: 1px solid rgba(0,0,0,0.3);
+            "
+          >
+            <!-- Capa de iluminación volumétrica — detrás del texto -->
+            <div class="pointer-events-none absolute inset-0" style="background: radial-gradient(ellipse at 50% 0%, rgba(212,168,71,0.07) 0%, transparent 55%), radial-gradient(ellipse at 0% 100%, rgba(124,111,196,0.04) 0%, transparent 45%), radial-gradient(ellipse at 100% 50%, rgba(196,30,58,0.03) 0%, transparent 45%);"></div>
+
+            <!-- Contenido siempre encima -->
+            <div class="prose-clerigo relative z-10">
+              <slot />
+            </div>
           </div>
 
+          <!-- Rotura inferior -->
+          <svg class="w-full" style="height:28px; display:block; transform:scaleY(-1);" viewBox="0 0 900 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M0,28 L0,18 C20,22 35,10 55,14 C70,17 80,6 100,10 C118,14 128,4 148,8 C165,12 175,2 195,6 C212,10 225,0 245,5 C262,9 272,1 292,5 C310,9 322,2 342,7 C358,11 370,3 390,8 C408,13 418,5 438,9 C455,13 468,4 488,8 C505,12 518,3 538,7 C555,11 568,2 588,6 C606,10 616,2 636,7 C653,12 665,4 685,8 C702,12 715,3 735,7 C752,11 765,2 785,6 C803,10 815,2 835,7 C852,12 865,4 885,8 L900,8 L900,28 Z"
+              fill="rgba(18,18,28,0.75)"/>
+            <path d="M0,28 L0,20 C15,24 28,14 48,17 C65,20 78,10 98,14 C115,17 130,8 150,12 C168,16 180,7 200,11 C218,15 230,6 250,10 C268,14 280,5 300,9 C318,13 330,5 350,9 C368,13 380,5 400,10 C418,15 430,7 450,11 C468,15 480,7 500,11 C518,15 530,7 550,11 C568,15 580,7 600,11 C618,15 630,7 650,11 C668,15 680,7 700,11 C718,15 730,7 750,11 C768,15 780,7 800,11 C818,15 832,8 852,12 C868,15 880,8 900,12 L900,28 Z"
+              fill="rgba(10,10,18,0.5)" />
+          </svg>
+
           <!-- End decoration -->
-
-          <!-- Script: inserta banner mobile después del 3er párrafo -->
-          <script>
-            (function () {
-              // Solo en mobile
-              if (window.innerWidth >= 640) return;
-
-              const prose = document.querySelector('.prose-clerigo');
-              if (!prose) return;
-
-              const paragraphs = prose.querySelectorAll('p');
-              if (paragraphs.length < 3) return;
-
-              const banner = document.createElement('div');
-              banner.className = 'my-6 flex flex-col items-center';
-              banner.innerHTML = `
-                <a href="https://tracking.wptpartners.com/visit/?bta=35660&nci=13207" target="_top">
-                  <img border="0" src="https://wptpartners.ck-cdn.com/tn/serve/?cid=501476" width="300" height="250" alt="WPT Global" loading="lazy" />
-                </a>
-                <p style="font-size:0.6rem; margin-top:0.5rem; text-align:center; color: var(--color-psalm);">
-                  +18 · Juego responsable · Términos en la plataforma
-                </p>
-              `;
-
-              paragraphs[2].insertAdjacentElement('afterend', banner);
-            })();
-          </script>
           <div class="mt-12 mb-8 text-center">
             <div class="divider-sacred">
               <span class="text-sm text-psalm">♠ ♥ ♦ ♣</span>
@@ -228,7 +241,6 @@ const formattedDate = pubDate.toLocaleDateString('es-ES', {
         <!-- Columna sidebar — solo desktop (lg+) -->
         <aside class="hidden lg:block w-[300px] shrink-0">
           <div class="sticky top-24">
-            <!-- Banner 300x600 -->
             <div class="flex justify-center">
               <Fragment set:html={banners.sidebar} />
             </div>
