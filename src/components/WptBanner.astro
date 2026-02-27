@@ -1,0 +1,42 @@
+---
+/**
+ * WptBanner.astro — Componente de banner responsivo WPT Global
+ * Lee el HTML desde src/config/banners.ts
+ *
+ * USO:
+ *   <WptBanner placement="inline" />   ← dentro de artículos
+ *   <WptBanner placement="section" />  ← entre secciones de portada
+ *   <WptBanner placement="footer" />   ← encima del footer
+ *   <WptBanner placement="sidebar" />  ← sidebar (futuro)
+ */
+
+import { banners } from '@/config/banners';
+
+interface Props {
+  placement: 'inline' | 'section' | 'footer' | 'sidebar';
+}
+
+const { placement } = Astro.props;
+---
+
+<div
+  class="wpt-banner"
+  data-placement={placement}
+  aria-label="Publicidad WPT Global"
+  role="complementary"
+>
+  <!-- Banner desktop (728×90) — oculto en mobile -->
+  <div class="hidden sm:flex justify-center items-center">
+    <Fragment set:html={banners.desktop} />
+  </div>
+
+  <!-- Banner mobile (300×250) — oculto en desktop -->
+  <div class="flex sm:hidden justify-center items-center">
+    <Fragment set:html={banners.mobile} />
+  </div>
+
+  <!-- Aviso legal -->
+  <p class="mt-2 text-center text-[0.6rem] text-psalm">
+    +18 · Juego responsable · Términos y condiciones en la plataforma
+  </p>
+</div>
