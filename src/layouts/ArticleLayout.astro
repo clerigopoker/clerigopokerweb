@@ -163,6 +163,14 @@ const formattedDate = pubDate.toLocaleDateString('es-ES', {
       </figure>
     )}
 
+    <!-- ===== BANNER 468x60 — debajo de imagen, solo mobile ===== -->
+    <div class="flex flex-col items-center mb-8 px-4 sm:hidden">
+      <Fragment set:html={banners.mobileBanner} />
+      <p class="mt-1 text-[0.6rem] text-psalm">
+        +18 · Juego responsable · Términos en la plataforma
+      </p>
+    </div>
+
     <!-- ===== LAYOUT DOS COLUMNAS (desktop) / UNA COLUMNA (mobile) ===== -->
     <div class="mx-auto max-w-6xl px-4 sm:px-6">
       <div class="flex gap-10">
@@ -174,6 +182,33 @@ const formattedDate = pubDate.toLocaleDateString('es-ES', {
           </div>
 
           <!-- End decoration -->
+
+          <!-- Script: inserta banner mobile después del 3er párrafo -->
+          <script>
+            (function () {
+              // Solo en mobile
+              if (window.innerWidth >= 640) return;
+
+              const prose = document.querySelector('.prose-clerigo');
+              if (!prose) return;
+
+              const paragraphs = prose.querySelectorAll('p');
+              if (paragraphs.length < 3) return;
+
+              const banner = document.createElement('div');
+              banner.className = 'my-6 flex flex-col items-center';
+              banner.innerHTML = `
+                <a href="https://tracking.wptpartners.com/visit/?bta=35660&nci=13207" target="_top">
+                  <img border="0" src="https://wptpartners.ck-cdn.com/tn/serve/?cid=501476" width="300" height="250" alt="WPT Global" loading="lazy" />
+                </a>
+                <p style="font-size:0.6rem; margin-top:0.5rem; text-align:center; color: var(--color-psalm);">
+                  +18 · Juego responsable · Términos en la plataforma
+                </p>
+              `;
+
+              paragraphs[2].insertAdjacentElement('afterend', banner);
+            })();
+          </script>
           <div class="mt-12 mb-8 text-center">
             <div class="divider-sacred">
               <span class="text-sm text-psalm">♠ ♥ ♦ ♣</span>

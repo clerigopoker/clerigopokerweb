@@ -33,7 +33,13 @@ export const banners = {
 
   // ── PROMOCIÓN 2 ──────────────────────────────────────────────────
 
-  /** Banner global — Todas las páginas, justo antes del footer */
+/** 468×60 — Artículos mobile, debajo de imagen destacada */
+  mobileBanner: `
+    <a href="https://tracking.wptpartners.com/visit/?bta=35660&nci=13214" Target="_Top"><img border="0" src="https://wptpartners.ck-cdn.com/tn/serve/?cid=501519"  width="468" height="60"></a>
+  `,
+
+  
+/** Banner global — Todas las páginas, justo antes del footer */
   global: `
     <a href="https://tracking.wptpartners.com/visit/?bta=35660&nci=8069" Target="_Top"><img border="0" src="https://wptpartners.ck-cdn.com/tn/serve/?cid=456367"  width="728" height="90"></a>
   `,
