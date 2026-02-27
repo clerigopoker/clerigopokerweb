@@ -2,6 +2,7 @@
 import BaseLayout from './BaseLayout.astro';
 import Breadcrumb from '@/components/Breadcrumb.astro';
 import WptBanner from '@/components/WptBanner.astro';
+import { banners } from '@/config/banners';
 import { getArticleSchema, getCanonical, getReadingTime } from '@/utils/seo';
 
 interface Props {
@@ -98,6 +99,7 @@ const formattedDate = pubDate.toLocaleDateString('es-ES', {
   <script type="application/ld+json" set:html={articleSchema} />
 
   <article class="relative">
+
     <!-- ===== ARTICLE HEADER ===== -->
     <header class="relative overflow-hidden pb-10 pt-10">
       <div class="pointer-events-none absolute left-1/2 top-0 h-[350px] w-[600px] -translate-x-1/2 opacity-[0.04]" style="background: radial-gradient(ellipse, var(--color-gold) 0%, transparent 70%); filter: blur(60px);" aria-hidden="true"></div>
@@ -161,38 +163,48 @@ const formattedDate = pubDate.toLocaleDateString('es-ES', {
       </figure>
     )}
 
-    <!-- ===== BANNER INLINE — antes de leer ===== -->
-    <div class="mx-auto max-w-3xl px-4 sm:px-6 mb-10">
-      <WptBanner placement="inline" />
-    </div>
+    <!-- ===== LAYOUT DOS COLUMNAS (desktop) / UNA COLUMNA (mobile) ===== -->
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+      <div class="flex gap-10">
 
-    <!-- ===== ARTICLE BODY ===== -->
-    <div class="mx-auto max-w-3xl px-4 sm:px-6">
-      <div class="prose-clerigo">
-        <slot />
-      </div>
+        <!-- Columna principal — artículo -->
+        <div class="min-w-0 flex-1">
+          <div class="prose-clerigo">
+            <slot />
+          </div>
 
-      <!-- ===== BANNER INLINE — después de leer ===== -->
-      <div class="mt-12">
-        <WptBanner placement="inline" />
-      </div>
-
-      <!-- ===== END DECORATION ===== -->
-      <div class="mt-12 mb-8 text-center">
-        <div class="divider-sacred">
-          <span class="text-sm text-psalm">♠ ♥ ♦ ♣</span>
+          <!-- End decoration -->
+          <div class="mt-12 mb-8 text-center">
+            <div class="divider-sacred">
+              <span class="text-sm text-psalm">♠ ♥ ♦ ♣</span>
+            </div>
+            {silo && (
+              <a
+                href={`/${silo}`}
+                class="mt-6 inline-flex items-center gap-2 text-sm font-medium text-psalm transition-all hover:gap-3 hover:text-gold"
+              >
+                <span aria-hidden="true">←</span>
+                Volver a {silo === 'estrategia' ? 'Estrategia' : silo === 'psicologia' ? 'Psicología' : silo === 'noticias' ? 'Noticias' : 'Conceptos'}
+              </a>
+            )}
+          </div>
         </div>
 
-        {silo && (
-          <a
-            href={`/${silo}`}
-            class="mt-6 inline-flex items-center gap-2 text-sm font-medium text-psalm transition-all hover:gap-3 hover:text-gold"
-          >
-            <span aria-hidden="true">←</span>
-            Volver a {silo === 'estrategia' ? 'Estrategia' : silo === 'psicologia' ? 'Psicología' : silo === 'noticias' ? 'Noticias' : 'Conceptos'}
-          </a>
-        )}
+        <!-- Columna sidebar — solo desktop (lg+) -->
+        <aside class="hidden lg:block w-[300px] shrink-0">
+          <div class="sticky top-24">
+            <!-- Banner 300x600 -->
+            <div class="flex justify-center">
+              <Fragment set:html={banners.sidebar} />
+            </div>
+            <p class="mt-2 text-center text-[0.6rem] text-psalm">
+              +18 · Juego responsable · Términos en la plataforma
+            </p>
+          </div>
+        </aside>
+
       </div>
     </div>
+
   </article>
 </BaseLayout>

@@ -4,19 +4,20 @@
  * Lee el HTML desde src/config/banners.ts
  *
  * USO:
- *   <WptBanner placement="inline" />   ← dentro de artículos
- *   <WptBanner placement="section" />  ← entre secciones de portada
- *   <WptBanner placement="footer" />   ← encima del footer
- *   <WptBanner placement="sidebar" />  ← sidebar (futuro)
+ *   <WptBanner placement="inline" />   ← dentro de artículos (728×90 / 300×250)
+ *   <WptBanner placement="section" />  ← entre secciones de portada (728×90 / 300×250)
+ *   <WptBanner placement="global" />   ← BaseLayout, antes del footer (HTML exclusivo)
  */
 
 import { banners } from '@/config/banners';
 
 interface Props {
-  placement: 'inline' | 'section' | 'footer' | 'sidebar';
+  placement: 'inline' | 'section' | 'global';
 }
 
 const { placement } = Astro.props;
+
+const isGlobal = placement === 'global';
 ---
 
 <div
@@ -25,13 +26,23 @@ const { placement } = Astro.props;
   aria-label="Publicidad WPT Global"
   role="complementary"
 >
-  <!-- Banner desktop (728×90) — oculto en mobile -->
-  <div class="hidden sm:flex justify-center items-center">
-    <Fragment set:html={banners.desktop} />
-  </div>
+  {isGlobal ? (
+    /* Banner exclusivo del BaseLayout — HTML propio */
+    <div class="flex justify-center items-center">
+      <Fragment set:html={banners.global} />
+    </div>
+  ) : (
+    /* Banners responsivos inline/section */
+    <>
+      <!-- Desktop (728×90) — oculto en mobile -->
+      <div class="hidden sm:flex justify-center items-center">
+        <Fragment set:html={banners.desktop} />
+      </div>
+      <!-- Mobile (300×250) — oculto en desktop -->
+      <div class="flex sm:hidden justify-center items-center">
+        <Fragment set:html={banners.mobile} />
+      </div>
+    </>
+  )}
 
-  <!-- Banner mobile (300×250) — oculto en desktop -->
-  <div class="flex sm:hidden justify-center items-center">
-    <Fragment set:html={banners.mobile} />
-  </div>
 </div>
