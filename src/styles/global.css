@@ -395,3 +395,11 @@ body::before {
   position: relative;
   z-index: 2;
 }
+
+body.day-0 { background-image: url('/images/fondos/domingo.avif'); }
+body.day-1 { background-image: url('/images/fondos/lunes.avif'); }
+body.day-2 { background-image: url('/images/fondos/martes.avif'); }
+body.day-3 { background-image: url('/images/fondos/miercoles.avif'); }
+body.day-4 { background-image: url('/images/fondos/jueves.avif'); }
+body.day-5 { background-image: url('/images/fondos/viernes.avif'); }
+body.day-6 { background-image: url('/images/fondos/sabado.avif'); }

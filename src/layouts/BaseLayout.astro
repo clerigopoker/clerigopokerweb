@@ -15,9 +15,9 @@ import CTAWpt from '@/components/CTAWpt.astro';
 import CookieConsent from '@/components/CookieConsent.astro';
 import AgeGate from '@/components/AgeGate.astro';
 import Analytics from '@/components/Analytics.astro';
+import WptBanner from '@/components/WptBanner.astro';
 import { getWebSiteSchema, type SEOProps } from '@/utils/seo';
 import '@/styles/global.css';
-import WptBanner from '@/components/WptBanner.astro';
 
 interface Props extends SEOProps {
   /** Si true, no muestra el CTA de WPT al final */
@@ -41,6 +41,7 @@ const {
   ...seoProps
 } = Astro.props;
 
+const dayOfWeek = new Date().getDay(); // 0=domingo, 6=sábado
 const websiteSchema = getWebSiteSchema();
 ---
 
@@ -49,10 +50,10 @@ const websiteSchema = getWebSiteSchema();
   <head>
     <SEOHead {...seoProps} />
     <Analytics />
-    <!-- Schema.org WebSite (global) -->
     <script type="application/ld+json" set:html={websiteSchema} />
   </head>
-  <body class="min-h-screen bg-abyss text-scripture antialiased">
+
+  <body class={`min-h-screen bg-abyss text-scripture antialiased day-${dayOfWeek}`}>
     <!-- GTM noscript fallback -->
     <noscript>
       <iframe
@@ -78,7 +79,11 @@ const websiteSchema = getWebSiteSchema();
     </main>
 
     {!hideCTA && <CTAWpt variant={ctaVariant} customEyebrow={ctaEyebrow} customHeadline={ctaHeadline} customBody={ctaBody} customCta={ctaCta} />}
-	<WptBanner placement="global" />
+
+    <div style="position: relative; z-index: 2;">
+      <WptBanner placement="global" />
+    </div>
+
     <Footer />
 
     <AgeGate />

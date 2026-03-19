@@ -18,17 +18,17 @@ export const banners = {
 
   /** 728×90 — Portada desktop */
   desktop: `
-    <a href="https://tracking.wptpartners.com/visit/?bta=35660&nci=13215" Target="_Top"><img border="0" src="https://wptpartners.ck-cdn.com/tn/serve/?cid=501474" width="728" height="90"></a>
+    <a href="https://tracking.wptpartners.com/visit/?bta=35660&nci=13656" Target="_Top"><img border="0" src="https://wptpartners.ck-cdn.com/tn/serve/?cid=504844" width="728" height="90"></a>
   `,
 
   /** 300×250 — Portada mobile */
   mobile: `
-    <a href="https://tracking.wptpartners.com/visit/?bta=35660&nci=13207" Target="_Top"><img border="0" src="https://wptpartners.ck-cdn.com/tn/serve/?cid=501476" width="300" height="250"></a>
+    <a href="https://tracking.wptpartners.com/visit/?bta=35660&nci=13647" Target="_Top"><img border="0" src="https://wptpartners.ck-cdn.com/tn/serve/?cid=504427" width="300" height="250"></a>
   `,
 
   /** 300×600 — Sidebar artículos desktop */
   sidebar: `
-    <a href="https://tracking.wptpartners.com/visit/?bta=35660&nci=13209" Target="_Top"><img border="0" src="https://wptpartners.ck-cdn.com/tn/serve/?cid=501477" width="300" height="600"></a>
+    <a href="https://tracking.wptpartners.com/visit/?bta=35660&nci=13649" Target="_Top"><img border="0" src="https://wptpartners.ck-cdn.com/tn/serve/?cid=504846" width="300" height="600"></a>
   `,
 
   // ── PROMOCIÓN 2 ──────────────────────────────────────────────────
